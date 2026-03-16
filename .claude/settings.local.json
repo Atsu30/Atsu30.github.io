@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:x.com)",
+      "Bash(ffmpeg:*)",
+      "Bash(winget install:*)",
+      "Bash(export:*)",
+      "Read(//c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Links/**)",
+      "Read(//c/ProgramData/chocolatey/**)",
+      "Read(//c/Users/user.DESKTOP-I3ROOIB/AppData/Local/**)",
+      "Bash(cmd.exe /c \"where ffmpeg\" 2>/dev/null)",
+      "Bash(ls:*)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Downloads/アプランテトリスα版PV.mp4\" -ss 36 -t 7 -vf \"fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/appland_drop.gif\" -y)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Downloads/ちえりちゃんでKAGURA_Short.mp4\" -ss 0 -t 9 -vf \"fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/chieri_kagura.gif\" -y)",
+      "WebFetch(domain:109ichiki.com)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/bunny_chieri_2022_08_04.mp4\" -ss 2 -t 6 -vf \"fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/bunny_chieri.gif\" -y)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/BlackChieri.mp4\" -ss 0 -t 5 -vf \"fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/black_chieri.gif\" -y)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/ChieriSwimsuit.mp4\" -filter_complex \"[0:v]trim=start=3:end=7,setpts=PTS-STARTPTS[v1];[0:v]trim=start=13:end=17,setpts=PTS-STARTPTS[v2];[v1][v2]concat=n=2:v=1:a=0[out];[out]fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/chieri_swimsuit.gif\" -y)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/WaitressChieri.mp4\" -ss 5 -t 7 -vf \"fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/waitress_chieri.gif\" -y)",
+      "Bash(FFMPEG=\"/c/Users/user.DESKTOP-I3ROOIB/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe\" && \"$FFMPEG\" -i \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/桜吹雪とちえりちゃん音あり.mp4\" -filter_complex \"[0:v]trim=start=3:end=6,setpts=PTS-STARTPTS[v1];[0:v]trim=start=9:end=16,setpts=PTS-STARTPTS[v2];[v1][v2]concat=n=2:v=1:a=0[out];[out]fps=12,scale=600:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -loop 0 \"/c/Users/user.DESKTOP-I3ROOIB/Document/Githubio/images/sakura_chieri.gif\" -y)",
+      "Bash(python3:*)",
+      "WebFetch(domain:atsu30.itch.io)",
+      "WebFetch(domain:moderndelta137.itch.io)",
+      "Bash(curl:*)",
+      "Bash(git init:*)",
+      "Bash(git checkout:*)",
+      "Bash(mkdir:*)",
+      "Bash(git rm:*)",
+      "Bash(cp:*)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh api:*)"
+    ]
+  }
+}

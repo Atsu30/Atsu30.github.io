@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>もりあーてぃ - ポートフォリオ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Quicksand', sans-serif;
+            /* 背景はCanvasで描画しますが、ベースカラーを敷いておきます */
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* グラスモーフィズム（すりガラス）エフェクトのカスタムクラス */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* スクロールバーのカスタマイズ（Webkit） */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.5); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* フィルタボタン */
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: #64748b;
+            cursor: pointer;
+        }
+        .genre-btn.active {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+        }
+        .tool-btn.active {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+        }
+        .filter-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+        }
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* タグピル */
+        .tag-pill {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.55rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        /* ジャンル別カード背景色 */
+        .work-card[data-genre="game"] {
+            background: rgba(252, 220, 236, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: none;
+        }
+        .work-card[data-genre="fanart"] {
+            background: rgba(228, 218, 252, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: none;
+        }
+
+        /* カードのフィルタアニメーション */
+        .work-card {
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        .work-card.hidden-by-filter {
+            opacity: 0;
+            transform: scale(0.92);
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-pink-200 selection:text-pink-900">
+
+    <!-- 背景のプロシージャルアニメーション用キャンバス -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
+
+    <!-- メインコンテンツ -->
+    <main class="min-h-screen relative z-10">
+        <div class="space-y-16 p-6 md:p-12 lg:p-24">
+
+            <!-- Hero / Profile Section -->
+            <div class="max-w-5xl mx-auto">
+            <section class="glass-panel p-8 md:p-12 rounded-[2rem] text-center space-y-6 transform transition duration-500 hover:shadow-2xl hover:-translate-y-1">
+                <div class="relative inline-block">
+                    <!-- アイコン画像（DiceBear APIを使用して可愛いアバターを生成） -->
+                    <img src="images/profile_icon.jpg" alt="Profile Icon" class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto border-4 border-white shadow-lg object-cover bg-white">
+
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-3 text-slate-800">
+                        もりあーてぃ
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
+                        個人ゲームの開発をしたり、<br class="hidden md:block">VTuberのファンゲーム作りや3Dのファンアートなどを作って推し活をしています。<br class="hidden md:block">
+                        本業はプログラマー。
+                    </p>
+                </div>
+            </section>
+            </div>
+
+            <!-- Works Section -->
+            <section class="space-y-8">
+                <h2 class="text-4xl font-extrabold text-center drop-shadow-sm text-slate-800">
+                    Works
+                </h2>
+
+                <!-- タグフィルタUI -->
+                <div class="flex flex-col items-center gap-3">
+                    <!-- ジャンル -->
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="filter-btn genre-btn active px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="genre" data-value="all">All</button>
+                        <button class="filter-btn genre-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-1" data-filter="genre" data-value="game"><i class="fa-solid fa-gamepad"></i> ゲーム</button>
+                        <button class="filter-btn genre-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="genre" data-value="fanart"><i class="fa-solid fa-palette"></i> ファンアート</button>
+                    </div>
+                    <!-- ツール -->
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="filter-btn tool-btn active px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="all">All</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="ue">UE</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="blender">Blender</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="unity">Unity</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="handdrawn">手描き</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="mmd">MMD</button>
+                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="vroid">VRoid</button>
+                    </div>
+                </div>
+
+                <!-- 作品カードグリッド -->
+                <div id="works-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+                    <!-- Work: Omen Tycoon お面タイクーン -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2026-02-03" onclick="window.open('https://moderndelta137.itch.io/omentycoon','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2026.02.03</span>
+                            <img src="images/omen_tycoon.jpg" alt="Omen Tycoon お面タイクーン" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">Omen Tycoon お面タイクーン</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">「配置」×「スコア」構築型ローグライト。夏祭りお面屋経営シミュレーション。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ど根性大根 Die-con Run -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2023-02-12" onclick="window.open('https://atsu30.itch.io/die-con-run','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.02.12</span>
+                            <img src="images/die_con_run.png" alt="ど根性大根 Die-con Run" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ど根性大根 Die-con Run</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">Have you ever seen a radish flower? 食育×ランニングゲーム。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ParaX -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2022-02-18" onclick="window.open('https://atsu30.itch.io/parax','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.02.18</span>
+                            <img src="images/parax.png" alt="ParaX" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ParaX</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">2D横スクロールプラットフォーマーとリズムゲームの2画面構成。GGJ2022作品。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: Voxmare -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2020-10-20" onclick="window.open('https://atsu30.itch.io/voxmare','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2020.10.20</span>
+                            <img src="images/voxmare.png" alt="Voxmare" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">Voxmare</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">相手の弾を跳ね返して戦うシューティングゲーム。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: あくしおファンアート -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2024-08-23" onclick="window.open('https://x.com/MoriArty_30/status/1827006706217574777','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.08.23</span>
+                            <img src="images/Toon_AquShio_05_Minecraft.png" alt="あくしおファンアート" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">あくしおファンアート</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">あくしお初のファンアート。卒業してもあくしおは永遠。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 1: 8番目の大きめの門 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="ue" data-date="2024-06-30" onclick="window.open('https://x.com/MoriArty_30/status/1807263406569001057','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.06.30</span>
+                            <img src="images/eighth_gate.png" alt="8番目の大きめの門" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">8番目の大きめの門</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">どっとライブ・APPLANDの無料ファンゲーム。どっとライブの倉庫に不思議な間違い探しを用意しました。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 2: アプランドロップ -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2025-10-25" onclick="window.open('https://x.com/MoriArty_30/status/1982141796168901118','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2025.10.25</span>
+                            <span class="absolute top-3 left-3 z-20 text-xs font-bold text-amber-100 bg-amber-500/80 backdrop-blur-sm px-2 py-0.5 rounded-full">開発中</span>
+                            <img src="images/appland_drop.gif" alt="アプランドロップ" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">アプランドロップ</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">アプランのメンバーを揃えて効果発動！爽快テトリス風ファンゲーム。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 3: ランドセルばあちゃる -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2024-07-03" onclick="window.open('https://x.com/MoriArty_30/status/1808564900173918661','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.07.03</span>
+                            <img src="images/ChieriVirtualSchoolBag.png" alt="ランドセルを背負っているところをちえりちゃんに見つかるばあちゃる" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ランドセルばあちゃる</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ランドセルを背負っているところをちえりちゃんに見つかるばあちゃる。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 4: ちえりーらんど従業員募集ポスター -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2024-06-25" onclick="window.open('https://x.com/MoriArty_30/status/1805664703747965200','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.06.25</span>
+                            <img src="images/Chieri-Land_Poster_01_big.png" alt="ちえりーらんど従業員募集ポスター" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりーらんど従業員募集ポスター</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりーらんどの従業員募集ポスター。一緒にゴミ箱を並べませんか？</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 5: ピノ様ファンアート -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="handdrawn" data-date="2023-10-21" onclick="window.open('https://x.com/MoriArty_30/status/1715633352437600294','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.10.21</span>
+                            <img src="images/pino_fanart.png" alt="ピノ様ファンアート" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ピノ様ファンアート</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ピノ様の手描きイラストファンアート。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-green-100 text-green-600">手描き</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: 桜吹雪とちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2022-04-06" onclick="window.open('https://x.com/MoriArty_30/status/1511673759731953672','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.04.06</span>
+                            <img src="images/sakura_chieri.gif" alt="桜吹雪とちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">桜吹雪とちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">初めてのファンアート。アニメヒロインの初登場シーンの運命的な出会い感を目指しました。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ティファ衣装ちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-04-29" onclick="window.open('https://x.com/MoriArty_30/status/1520007585109217282','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.04.29</span>
+                            <img src="images/VRoidChieri.png" alt="ティファ衣装ちえりちゃん" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ティファ衣装ちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ティファ衣装のちえりちゃん。VRoidで作ってみた。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: RPG酒場の看板娘ちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-01" onclick="window.open('https://x.com/MoriArty_30/status/1520776133242851328','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.01</span>
+                            <img src="images/waitress_chieri.gif" alt="RPG酒場の看板娘ちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" style="object-position: center 20%">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">RPG酒場の看板娘ちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">RPG酒場で働く看板娘のちえりちゃん。こんな娘がいる酒場なら通っちゃいますね。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ロリちえり -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-06" onclick="window.open('https://x.com/MoriArty_30/status/1522511975460220931','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.06</span>
+                            <img src="images/loli_chieri.jpg" alt="ロリちえり" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ロリちえり</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">こどもの日ということでロリちえりを作りました。4周年おめでとう！</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: 水着姿のちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-23" onclick="window.open('https://x.com/MoriArty_30/status/1528726400470945792','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.23</span>
+                            <img src="images/chieri_swimsuit.gif" alt="水着姿のちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">水着姿のちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">水着姿のちえりちゃん。UEとVRoidで制作。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ブラックちえり -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2022-05-29" onclick="window.open('https://x.com/MoriArty_30/status/1530907814066987008','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.29</span>
+                            <img src="images/black_chieri.gif" alt="ブラックちえり" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ブラックちえり</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">エルデンのボスとして出てきそうなブラックちえりを作りました。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: 従業員衣装ちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-08-01" onclick="window.open('https://x.com/MoriArty_30/status/1554129245835706369','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.01</span>
+                            <img src="images/VRoid_JyugyoinChieri.png" alt="従業員衣装ちえりちゃん" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">従業員衣装ちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃんに従業員衣装つくって着せてみたらかわいすぎた。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: バニーの日ちえりちゃん -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-08-04" onclick="window.open('https://x.com/MoriArty_30/status/1555193641316286466','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.04</span>
+                            <img src="images/bunny_chieri.gif" alt="バニーの日ちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" style="object-position: center 20%">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">バニーの日ちえりちゃん</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちょっとのり遅れたバニーの日ちえりちゃん。ARで作ってみたよ。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: 反省のポーズ -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-08-31" onclick="window.open('https://x.com/MoriArty_30/status/1564779895313469442','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.31</span>
+                            <img src="images/chieri_blender_hansei.png" alt="反省のポーズ" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">反省のポーズ！</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">反省のポーズ！</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ちえりちゃん フィギュア風 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-09-08" onclick="window.open('https://x.com/MoriArty_30/status/1567814825463656448','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.09.08</span>
+                            <img src="images/chieri_figure.png" alt="ちえりちゃん フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃん フィギュア風</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃんのMMDをフィギュア風にしてみました。フィギュア化待ってます！</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ピノ様 フィギュア風 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-10-04" onclick="window.open('https://x.com/MoriArty_30/status/1577273909946159105','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.04</span>
+                            <img src="images/pino_figure.png" alt="ピノ様 フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ピノ様 フィギュア風</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">フィギュア風第二弾はピノ様！初のピノ様ファンアート。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: ミルコ フィギュア風 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-10-12" onclick="window.open('https://x.com/MoriArty_30/status/1580145119897874433','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.12</span>
+                            <img src="images/miruko_figure.png" alt="ミルコ フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ミルコ フィギュア風</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">フィギュア風にしてみた第3弾。ヒロアカのミルコ。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work: チャイナちえりちゃんでKAGURA -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="mmd" data-date="2022-10-30" onclick="window.open('https://x.com/MoriArty_30/status/1586736087371612160','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.30</span>
+                            <img src="images/chieri_kagura.gif" alt="チャイナちえりちゃんでKAGURA" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">チャイナちえりちゃんでKAGURA</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">チャイナ衣装の花京院ちえりちゃんでKAGURA♪</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">MMD</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 6: ちえりちゃん誕生日2023 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2023-03-29" onclick="window.open('https://x.com/MoriArty_30/status/1641079828752519169','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.03.29</span>
+                            <img src="images/Chieri2023Birthday.png" alt="ちえりちゃんお誕生日2023" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃんお誕生日2023</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃん誕生日おめでとう！従業員からケーキのプレゼント。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Work 7: ちえりちゃん祝11万人 -->
+                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="handdrawn" data-date="2023-09-14" onclick="window.open('https://x.com/MoriArty_30/status/1702044382785061038','_blank')">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.09.14</span>
+                            <img src="images/chieri_fanart.png" alt="ちえりちゃん祝11万人ファンアート" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃん祝11万人</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃん11万人記念の手描きファンアート。初の手描き作品。</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
+                                <span class="tag-pill bg-green-100 text-green-600">手描き</span>
+                            </div>
+                        </div>
+                    </article>
+
+
+
+                </div>
+            </section>
+
+            <div class="max-w-5xl mx-auto">
+            <!-- Contact Section -->
+            <section class="glass-panel p-10 rounded-[2rem] text-center max-w-2xl mx-auto">
+                <h2 class="text-3xl font-extrabold mb-4 text-slate-800">Contact</h2>
+                <p class="text-slate-600 mb-8">お仕事の相談や何かあればXまで。</p>
+                
+                <!-- X (Twitter) Link -->
+                <a href="https://x.com/MoriArty_30" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-black text-white hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl hover:scale-110 transform duration-300 group">
+                    <!-- X Logo SVG -->
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="w-8 h-8 fill-current group-hover:rotate-12 transition-transform duration-300"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.96H5.078z"></path></svg>
+                </a>
+            </section>
+            
+            <footer class="text-center text-slate-400 text-sm mt-12">
+                &copy; <span id="year"></span> もりあーてぃ. All rights reserved.
+            </footer>
+            </div>
+        </div>
+    </main>
+
+    <!-- Works フィルタリングスクリプト -->
+    <script>
+        (function() {
+            let activeGenre = 'all';
+            let activeTool = 'all';
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const workCards = document.querySelectorAll('.work-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filterType = btn.dataset.filter;
+                    const value = btn.dataset.value;
+
+                    // 同じグループ内のactiveを解除して自分をactiveに
+                    const groupClass = filterType === 'genre' ? 'genre-btn' : 'tool-btn';
+                    document.querySelectorAll('.' + groupClass).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    if (filterType === 'genre') activeGenre = value;
+                    if (filterType === 'tool') activeTool = value;
+
+                    applyFilter();
+                });
+            });
+
+            function applyFilter() {
+                workCards.forEach(card => {
+                    const genre = card.dataset.genre;
+                    const tools = card.dataset.tool.split(' ');
+                    const matchGenre = activeGenre === 'all' || genre === activeGenre;
+                    const matchTool = activeTool === 'all' || tools.includes(activeTool);
+
+                    if (matchGenre && matchTool) {
+                        card.classList.remove('hidden-by-filter');
+                    } else {
+                        card.classList.add('hidden-by-filter');
+                    }
+                });
+            }
+
+            // 初期表示: data-date降順でソート
+            const grid = document.getElementById('works-grid');
+            const sorted = Array.from(workCards).sort((a, b) => b.dataset.date.localeCompare(a.dataset.date));
+            sorted.forEach(card => grid.appendChild(card));
+        })();
+    </script>
+
+    <!-- プロシージャル背景アニメーションのスクリプト -->
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let tiles = [];
+        const TILE_SIZE = 12;   // ドットの基本サイズを小さく
+        const TILE_SPACING = 30; // 隙間を広げて抜け感（余白）を作る
+        
+        let mouse = { x: -1000, y: -1000 };
+        let lastMousePos = { x: -1000, y: -1000 }; // 波紋発生用の前回のマウス位置
+        let ripples = []; // クリックによる波紋のエフェクトを管理する配列
+
+        // キャンバスのリサイズとタイルの初期化
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initTiles();
+        }
+
+        function initTiles() {
+            tiles = [];
+            const cols = Math.ceil(width / (TILE_SIZE + TILE_SPACING)) + 1;
+            const rows = Math.ceil(height / (TILE_SIZE + TILE_SPACING)) + 1;
+            
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    tiles.push({
+                        cx: i * (TILE_SIZE + TILE_SPACING) + TILE_SIZE / 2,
+                        cy: j * (TILE_SIZE + TILE_SPACING) + TILE_SIZE / 2,
+                        col: i,
+                        row: j
+                    });
+                }
+            }
+        }
+
+        // イベントリスナー
+        window.addEventListener('resize', resize);
+        
+        // マウスの動きに反応（画面全体で検知）
+        window.addEventListener('mousemove', e => { 
+            mouse.x = e.clientX; 
+            mouse.y = e.clientY; 
+            
+            // 一定距離移動するごとにホバー用の波紋を生成
+            let dx = mouse.x - lastMousePos.x;
+            let dy = mouse.y - lastMousePos.y;
+            if (Math.sqrt(dx*dx + dy*dy) > 100) { // 100px移動するごとに波紋（控えめに）
+                ripples.push({
+                    x: mouse.x,
+                    y: mouse.y,
+                    time: performance.now(),
+                    type: 'hover' // ホバー由来の波紋として識別
+                });
+                lastMousePos = { x: mouse.x, y: mouse.y };
+            }
+        });
+        
+        // スマホのタッチ対応
+        window.addEventListener('touchmove', e => {
+            if(e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].touches[0].clientY;
+                
+                let dx = mouse.x - lastMousePos.x;
+                let dy = mouse.y - lastMousePos.y;
+                if (Math.sqrt(dx*dx + dy*dy) > 100) {
+                    ripples.push({
+                        x: mouse.x,
+                        y: mouse.y,
+                        time: performance.now(),
+                        type: 'hover'
+                    });
+                    lastMousePos = { x: mouse.x, y: mouse.y };
+                }
+            }
+        });
+
+        // クリックで波紋を生成（UI要素の背後でも反応させるためwindowに付与）
+        window.addEventListener('click', e => {
+            ripples.push({ 
+                x: e.clientX, 
+                y: e.clientY, 
+                time: performance.now(),
+                type: 'click' // クリック由来の波紋として識別
+            });
+        });
+
+        // 描画ループ
+        function draw(time) {
+            // 背景のクリア
+            ctx.clearRect(0, 0, width, height);
+            
+            // 古い波紋を削除（タイプによって寿命を変える）
+            ripples = ripples.filter(r => {
+                let maxAge = r.type === 'click' ? 2000 : 1000;
+                return time - r.time < maxAge;
+            });
+
+            tiles.forEach(tile => {
+                // 1. 時間による色の変化用の波（サイズには影響させない）
+                let colorWave = Math.sin(tile.col * 0.1 + tile.row * 0.1 + time * 0.001);
+
+                // 2. マウス移動とクリックによる波紋の影響
+                let rippleEffect = 0;
+                let hueShift = 0; // 波紋による色の変化
+                
+                ripples.forEach(r => {
+                    let rdx = tile.cx - r.x;
+                    let rdy = tile.cy - r.y;
+                    let rdist = Math.sqrt(rdx*rdx + rdy*rdy);
+                    let age = time - r.time;
+                    
+                    let maxAge, speed, thickness, intensity;
+                    
+                    if (r.type === 'click') {
+                        maxAge = 2000;    // 消えるまでの時間（少し短く）
+                        speed = 0.6;      // 波の速さ（ゆったり）
+                        thickness = 80;   // 波の太さ
+                        intensity = 0.8;  // 波の高さ（控えめに）
+                    } else { // 'hover'
+                        maxAge = 1000;    // すぐ消える
+                        speed = 0.4;
+                        thickness = 50;
+                        intensity = 0.4;  // ふんわり程度
+                    }
+                    
+                    // 波の広がる半径
+                    let radius = age * speed; 
+                    let distanceToRing = Math.abs(rdist - radius);
+                    
+                    // リングの太さ（影響範囲）
+                    if (distanceToRing < thickness) {
+                        let force = Math.cos((distanceToRing / thickness) * (Math.PI / 2)); 
+                        let effect = force * (1 - age / maxAge) * intensity;
+                        rippleEffect += effect;
+                        
+                        // 波紋が強いほど色相も変化させる
+                        hueShift += effect * (r.type === 'click' ? 40 : 20);
+                    }
+                });
+
+                // スケール（サイズ）の合成
+                // 基本の大きさ(1.0) + 波紋影響
+                let scale = 1.0 + rippleEffect;
+                // サイズが極端になりすぎないように制限
+                scale = Math.max(0.1, Math.min(3.5, scale)); 
+                
+                let currentRadius = (TILE_SIZE / 2) * scale;
+                
+                // 色の計算（時間経過と波紋によるグラデーション）
+                let hue = (220 + colorWave * 30 + time * 0.01 + hueShift) % 360;
+                
+                // 普段は薄く、触った時だけふわっと浮き出る
+                let alpha = Math.min(0.6, 0.08 + scale * 0.12);
+                let saturation = Math.min(90, 50 + scale * 10);
+                
+                ctx.fillStyle = `hsla(${hue}, ${saturation}%, 65%, ${alpha})`;
+                
+                // 円（ドット）の描画
+                ctx.beginPath();
+                ctx.arc(tile.cx, tile.cy, currentRadius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(draw);
+        }
+
+        // 初期化とアニメーション開始
+        resize();
+        requestAnimationFrame(draw);
+
+    </script>
+</body>
+</html>
