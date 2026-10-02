@@ -1,896 +1,1693 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>もりあーてぃ - ポートフォリオ</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        body {
-            font-family: 'M PLUS Rounded 1c', 'Quicksand', sans-serif;
-            /* 背景はCanvasで描画しますが、ベースカラーを敷いておきます */
-            background-color: #f8fafc;
-            overflow-x: hidden;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>もりあーてぃ - ポートフォリオ</title>
+<meta name="description" content="もりあーてぃ（MoriArty）のポートフォリオ。個人ゲーム開発、VTuberのファンゲーム、3Dファンアート。">
+<meta property="og:title" content="もりあーてぃ - ポートフォリオ">
+<meta property="og:description" content="個人ゲーム開発、VTuberのファンゲーム、3Dファンアート。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://atsu30.github.io/">
+<meta property="og:image" content="https://atsu30.github.io/assets/omen_asobase.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;800&family=Outfit:wght@800&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+/* くらむぼん（フロップデザイン、SIL OFL 1.1。Dela Gothic One の派生） */
+@font-face{font-family:'Kuramubon';src:url('fonts/Kuramubon-subset.woff2') format('woff2');font-weight:400 900;font-display:swap}
+:root{
+  --navy:#221b4e; --cream:#fff8ec; --pink:#ff5c9e; --cyan:#21cdff; --lemon:#ffe03a;
+  --mint:#3fe79a; --orange:#ff9a3d; --violet:#9b7dff;
+  --pad:clamp(14px,3vw,40px); --gap:clamp(8px,1.2vw,16px);
+  --disp:'Kuramubon','Dela Gothic One','M PLUS Rounded 1c',sans-serif;
+  --body:'M PLUS Rounded 1c','Outfit',sans-serif;
+  --lat:'Outfit','M PLUS Rounded 1c',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:clip;background:var(--cream)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+body{font-family:var(--body);font-weight:500;color:var(--navy);background:var(--cream);overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#bgSwitch{position:fixed;right:12px;bottom:12px;z-index:8000;font:700 11px/1 var(--lat,sans-serif);letter-spacing:.04em;padding:8px 12px;border:2px solid var(--navy);border-radius:99px;background-color:rgba(255,255,255,.85);color:var(--navy);box-shadow:3px 3px 0 var(--navy);opacity:.45}
+#bgSwitch.on,#bgSwitch:hover,#bgSwitch:focus-visible{opacity:1}
+#stage,#cut{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100lvh;z-index:0;display:block;pointer-events:none}
+#stage{opacity:0}
+main{position:relative;z-index:5}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-        /* グラスモーフィズム（すりガラス）エフェクトのカスタムクラス */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        }
+/* ---------- intro overlay ---------- */
+#intro{position:fixed;inset:0;z-index:9000;pointer-events:none;overflow:hidden}
+#intro .bars{position:absolute;left:-40%;top:-40%;width:180%;height:180%}
+#intro .bar{height:12.5%;width:100%}
+#intro .blob{position:absolute;left:50%;top:50%;width:min(70vmin,620px);height:min(70vmin,620px);margin:calc(min(70vmin,620px)/-2) 0 0 calc(min(70vmin,620px)/-2);overflow:visible}
 
-        /* スクロールバーのカスタマイズ（Webkit） */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.5); 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+/* ---------- hero ---------- */
+.hero{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden}
+.chip{display:inline-block;font-family:var(--lat);font-weight:800;letter-spacing:.08em;font-size:clamp(11px,1.1vw,15px);padding:.45em .9em;border:3px solid var(--navy);border-radius:99px;background:#fff;box-shadow:3px 3px 0 var(--navy)}
+.title{position:absolute;z-index:3;left:var(--pad);top:max(13vh,66px);display:flex;align-items:center;gap:.2em;font-family:var(--disp);font-weight:400;font-size:min(8.6vw,17vh);line-height:1;pointer-events:none}
+.t-icon{flex:none;width:1.12em;height:1.12em;max-width:none;border-radius:50%;object-fit:cover;background:#fff;border:.06em solid var(--navy);box-shadow:.07em .07em 0 var(--pink);transform-origin:50% 50%}
+.t-col{display:flex;flex-direction:column;align-items:flex-start;gap:.06em}
+.t-row{display:flex}
+.t-role{display:inline-block;font-family:var(--disp);font-size:.2em;line-height:1;color:var(--navy);background:var(--lemon);border:.14em solid var(--navy);border-radius:.55em;padding:.32em .75em .38em;box-shadow:.2em .2em 0 var(--navy);transform:rotate(-3deg);transform-origin:0 100%;margin:0 0 .55em .25em;white-space:nowrap}
+.t-en{font-family:var(--lat);font-weight:800;font-size:.2em;letter-spacing:.38em;line-height:1;padding-left:.2em;color:var(--navy)}
+.mask{display:block;overflow:hidden;padding:.14em .1em .2em;margin:-.14em -.1em -.2em}
+.ch{display:block;color:var(--navy);text-shadow:.05em .06em 0 var(--pink)}
+.js .hero .ch,.js .hero .t-icon,.js .hero .t-en,.js .hero .t-role,.js .hero .chip,.js .hero .band,.js .hero .deco,.js .hero .screen{opacity:0}
+.bands{position:absolute;z-index:1;left:-5vw;right:-5vw;bottom:5vh;height:min(24vh,220px)}
+.bands-top{display:none}
+.band{position:absolute;left:0;right:0;border-block:3px solid var(--navy);overflow:hidden;white-space:nowrap}
+.band .mq-track{display:flex;width:max-content;will-change:transform}
+.band span{font-family:var(--disp);font-size:clamp(20px,3.2vw,44px);padding:.25em .5em;line-height:1.1}
+.band-a{background:var(--pink);top:18%;transform:rotate(-3deg);color:#fff}
+.band-b{background:var(--lemon);top:48%;transform:rotate(2deg)}
+.band-a span{text-shadow:2px 2px 0 var(--navy)}
+.deco{position:absolute;z-index:0;pointer-events:none}
+.deco svg{width:100%;height:100%;display:block;overflow:visible}
+.d1{left:47vw;top:9vh;width:clamp(28px,4vw,56px);height:clamp(28px,4vw,56px)}
+.d2{right:4vw;top:13vh;width:clamp(22px,3vw,44px);height:clamp(22px,3vw,44px)}
+.d3{left:5vw;top:60vh;width:clamp(26px,3.6vw,50px);height:clamp(26px,3.6vw,50px)}
+.d4{left:34vw;top:62vh;width:clamp(20px,2.6vw,38px);height:clamp(20px,2.6vw,38px)}
 
-        /* フィルタボタン */
-        .filter-btn {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            color: #64748b;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
-        }
-        .genre-btn.active {
-            background: linear-gradient(135deg, #f472b6, #ec4899);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
-        }
-        .tool-btn.active {
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
-        }
-        .filter-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.8);
-            transform: scale(1.05);
-        }
-        .filter-btn:active {
-            transform: scale(0.95);
-        }
+/* mini reel: auto-playing tilted screen in the hero */
+.screen{--sw:min(50vw,calc(40vh*1.6));--sa:16/10;position:absolute;z-index:2;display:block;width:var(--sw);right:calc(var(--pad) + 1.5vw);top:max(36vh,196px)}
+.scr-tilt{position:relative;transform:rotate(3.5deg);transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.screen:hover .scr-tilt{transform:rotate(1deg) scale(1.02)}
+.scr-frame{position:relative;aspect-ratio:var(--sa);border:4px solid var(--navy);border-radius:22px;overflow:hidden;background:#fff;box-shadow:10px 10px 0 var(--ac,var(--pink));transition:box-shadow .3s}
+.scr-s{position:absolute;inset:0;visibility:hidden;background:#fff}
+.scr-s:first-child{visibility:visible}
+.scr-s .m{display:block;width:100%;height:100%;object-fit:cover}
+.scr-num{position:absolute;z-index:3;left:-4%;bottom:-12%;font-family:var(--disp);line-height:.9;font-size:calc(var(--sw)*.3);color:var(--ac,var(--pink));overflow:hidden;padding:.05em .08em .1em;pointer-events:none;
+  text-shadow:.022em 0 0 var(--navy),-.022em 0 0 var(--navy),0 .022em 0 var(--navy),0 -.022em 0 var(--navy),.016em .016em 0 var(--navy),-.016em .016em 0 var(--navy),.016em -.016em 0 var(--navy),-.016em -.016em 0 var(--navy),0 .05em 0 var(--navy)}
+.scr-num span{display:inline-block}
+.scr-ttl{position:absolute;z-index:4;right:-3%;bottom:-7%;max-width:56%;text-align:right;font-family:var(--disp);font-size:calc(clamp(15px,calc(var(--sw)*.062),34px)*var(--ts,1));line-height:1.15;pointer-events:none}
+.scr-ttl .ln>span{white-space:nowrap}
+.scr-ttl.wrap .ln>span{white-space:normal;text-wrap:balance;word-break:auto-phrase;line-break:strict}
+.scr-ttl .ln{display:block;overflow:hidden;padding:4px 14px 14px 4px;margin:-4px -14px -14px -4px}
+.scr-ttl .ln>span{display:inline-block;background:#fff;border:3px solid var(--navy);border-radius:12px;padding:.04em .3em .08em;box-shadow:4px 4px 0 var(--ac,var(--pink))}
 
-        /* タグピル */
-        .tag-pill {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.15rem 0.55rem;
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.85) !important;
-        }
+/* ---------- section heads (shared) ---------- */
+.sec{position:relative;padding:12vh var(--pad) 4vh;max-width:calc(1360px + var(--pad)*2);margin:0 auto}
+.sec.fan{padding-top:8vh;padding-bottom:10vh}
+.sec-head{position:relative;margin-bottom:clamp(20px,3.5vw,44px)}
+.sec-top{display:flex;flex-wrap:wrap;align-items:center;gap:clamp(10px,2vw,28px)}
+.sec h2{font-family:var(--disp);font-weight:400;font-size:clamp(46px,10.5vw,150px);line-height:1;display:flex;flex-wrap:wrap}
+.sec h2 .ch2{display:inline-block;overflow:hidden;padding:.12em .07em .2em .02em;margin:-.12em -.03em -.2em 0}
+.sec h2 .ch2>span{display:inline-block;color:var(--navy);text-shadow:.05em .06em 0 var(--pink)}
+.stk{display:inline-block;font-family:var(--disp);font-size:clamp(20px,3.4vw,48px);line-height:1;padding:.32em .7em .38em;border:5px solid var(--navy);border-radius:14px;box-shadow:7px 7px 0 var(--navy);white-space:nowrap;transform:rotate(-6deg);will-change:transform}
+.stk-games{background:var(--lemon);color:var(--navy)}
+.stk-fan{background:var(--pink);color:#fff;text-shadow:2px 2px 0 var(--navy);transform:rotate(5deg)}
+.sweep{display:none;position:absolute;inset:-8px calc(var(--pad)*-1);overflow:hidden;pointer-events:none;z-index:4}
+.sweep i{position:absolute;top:0;bottom:0;left:0;width:34%;transform:skewX(-18deg)}
+.sweep i:nth-child(1){background:var(--pink)}
+.sweep i:nth-child(2){background:var(--lemon);width:20%}
+.sband{position:relative;width:104vw;margin:0 0 clamp(30px,5vw,60px) calc(50% - 52vw);border-block:3px solid var(--navy);overflow:hidden;white-space:nowrap;transform:rotate(-1.4deg)}
+.sband .mq-track{display:flex;width:max-content;will-change:transform}
+.sband span{font-family:var(--disp);font-size:clamp(18px,2.8vw,40px);padding:.28em .5em;line-height:1.1}
+.sband.a{background:var(--pink);color:#fff}
+.sband.a span{text-shadow:2px 2px 0 var(--navy)}
+.sband.b{background:var(--mint);color:var(--navy);transform:rotate(1.2deg)}
 
-        /* ジャンル別カード背景色 */
-        .work-card[data-genre="game"] {
-            background: rgba(252, 220, 236, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: none;
-        }
-        .work-card[data-genre="fanart"] {
-            background: rgba(228, 218, 252, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: none;
-        }
+/* ---------- GAMES: big feature panels ---------- */
+.games{display:flex;flex-direction:column;gap:clamp(24px,3.6vw,52px)}
+.gp{position:relative;display:grid;grid-template-columns:1.3fr 1fr;align-items:center;gap:clamp(18px,3.2vw,52px);padding:clamp(18px,3.2vw,48px);min-height:min(70vh,580px);border:4px solid var(--navy);border-radius:clamp(20px,2.6vw,36px);background:var(--ac);overflow:hidden;box-shadow:8px 8px 0 var(--navy)}
+.gp.rev{grid-template-columns:1fr 1.3fr}
+.gp.rev .gp-media{order:2}
+.gp-bg{position:absolute;inset:-100px;pointer-events:none;background:repeating-linear-gradient(135deg,rgba(255,255,255,.28) 0 26px,transparent 26px 52px);animation:stripes 3s linear infinite}
+@keyframes stripes{to{transform:translateX(73.54px)}}
+.gp-no{position:absolute;bottom:-.12em;font-family:var(--disp);font-size:clamp(150px,30vw,420px);line-height:1;color:transparent;-webkit-text-stroke:4px rgba(255,255,255,.85);pointer-events:none;white-space:nowrap;will-change:transform}
+.gp:not(.rev) .gp-no{right:-1vw}
+.gp.rev .gp-no{left:-1vw}
+.gp-mw{position:relative;z-index:2}
+.gp.rev .gp-mw{order:2}
+.gp-media{position:relative;display:block;aspect-ratio:var(--ar,16/9);border-radius:22px;box-shadow:9px 9px 0 var(--navy);transform:rotate(var(--rot,-1.5deg));transform-style:preserve-3d;transition:box-shadow .35s}
+.gp-mw.hv .gp-media{box-shadow:13px 15px 0 var(--navy),0 30px 56px color-mix(in srgb,var(--ac2,var(--pink)) 80%,transparent)}
+.gm-clip{position:absolute;inset:0;border:4px solid var(--navy);border-radius:22px;overflow:hidden;background:#fff;isolation:isolate}
+.par{position:absolute;inset:0}
+.gp-media .m{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;max-width:none}
+.gl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.75),rgba(255,255,255,0) 52%);mix-blend-mode:overlay}
+.ho{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:linear-gradient(115deg,transparent 14%,rgba(255,92,158,.7) 30%,rgba(255,224,58,.65) 41%,rgba(63,231,154,.65) 52%,rgba(33,205,255,.7) 63%,rgba(155,125,255,.65) 74%,transparent 90%);background-size:260% 260%;background-position:var(--hx,50%) var(--hy,50%);mix-blend-mode:soft-light}
+.hv .gl,.hv .ho{opacity:1}
+.gm-no{position:absolute;z-index:3;left:12px;bottom:4px;font-family:var(--disp);font-size:clamp(46px,7vw,100px);line-height:.9;color:#fff;pointer-events:none;transform:translateZ(46px);
+  text-shadow:3px 0 0 var(--navy),-3px 0 0 var(--navy),0 3px 0 var(--navy),0 -3px 0 var(--navy),2px 2px 0 var(--navy),-2px 2px 0 var(--navy),2px -2px 0 var(--navy),-2px -2px 0 var(--navy),0 .06em 0 var(--navy)}
+.gp-info{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:clamp(10px,1.5vw,18px);min-width:0}
+.gp-tag{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gp-tag .chip.k{background:var(--navy);color:#fff;box-shadow:3px 3px 0 #fff}
+/* タイトルは1行に収まるよう自動で縮小（--ts）。それでも長いものは .wrap で文節ごとに2行へ */
+.gp-t{font-family:var(--disp);font-weight:400;font-size:calc(clamp(30px,4.6vw,70px)*var(--ts,1));line-height:1.12;max-width:100%}
+.gp-t .ln>span{white-space:nowrap}
+.gp-t.wrap .ln>span{white-space:normal;text-wrap:balance;word-break:auto-phrase;line-break:strict}
+.gp-t .ln{display:block;overflow:hidden;padding:.1em .12em .2em;margin:-.1em -.12em -.2em}
+.gp-t .ln>span{display:inline-block;color:#fff;
+  text-shadow:3px 0 0 var(--navy),-3px 0 0 var(--navy),0 3px 0 var(--navy),0 -3px 0 var(--navy),2px 2px 0 var(--navy),-2px 2px 0 var(--navy),2px -2px 0 var(--navy),-2px -2px 0 var(--navy),0 .07em 0 var(--navy),0 .1em 0 var(--navy)}
+.gp-d{background:#fff;border:3px solid var(--navy);border-radius:14px;padding:.7em 1em;font-size:clamp(13px,1.2vw,16px);line-height:1.7;box-shadow:4px 4px 0 var(--navy)}
+.play{display:inline-flex;align-items:center;gap:.5em;font-family:var(--disp);font-size:clamp(18px,2vw,28px);padding:.5em 1.1em .56em;border:4px solid var(--navy);border-radius:99px;background:var(--navy);color:#fff;box-shadow:5px 5px 0 #fff}
+.mag{display:inline-block;transform:translate(var(--mgx,0px),var(--mgy,0px));transition:transform .22s cubic-bezier(.3,1.6,.5,1)}
+.gp-star{position:absolute;z-index:3;width:clamp(30px,4vw,56px);aspect-ratio:1;pointer-events:none}
+.gp-star svg{width:100%;height:100%;display:block;overflow:visible}
 
-        /* カードのフィルタアニメーション */
-        .work-card {
-            transition: opacity 0.35s ease, transform 0.35s ease;
-        }
-        .work-card.hidden-by-filter {
-            opacity: 0;
-            transform: scale(0.92);
-            pointer-events: none;
-            position: absolute;
-            visibility: hidden;
-        }
-    </style>
+/* ---------- FAN ART: masking-tape photo prints on a plain wall ---------- */
+#fhText,#fhSh{font-family:var(--disp);font-weight:400}
+.fh{display:block;width:min(100%,calc(clamp(46px,10.5vw,150px)*4.21));height:auto;overflow:visible}
+.pal{position:absolute;right:0;top:-6px;width:clamp(70px,11vw,150px);height:auto;transform:rotate(14deg);overflow:visible;pointer-events:none}
+.fan-board{position:relative;padding-top:12px}
+.fgrid{--fg:clamp(14px,1.9vw,26px);display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:var(--fcell,150px);gap:var(--fg)}
+.fa{position:relative;display:block}
+.fa.pre{opacity:0}
+.fa.in{animation:drop .8s cubic-bezier(.3,.9,.4,1) var(--d,0s) backwards}
+@keyframes drop{
+  0%{opacity:0;transform:translateY(-90px) rotate(-9deg) scale(1.16)}
+  30%{opacity:1}
+  58%{transform:translateY(0) rotate(0) scale(.965)}
+  78%{transform:translateY(-6px) rotate(0) scale(1.012)}
+  100%{transform:none}
+}
+.pr{position:absolute;inset:0;background:#fffefb;border-radius:3px;box-shadow:0 6px 14px rgba(34,27,78,.17),0 1px 3px rgba(34,27,78,.2);transform-style:preserve-3d;transition:box-shadow .3s;will-change:transform}
+.fa.hv .pr{box-shadow:0 18px 30px color-mix(in srgb,var(--ac) 55%,transparent),0 4px 8px rgba(34,27,78,.25)}
+.pr-clip{position:absolute;left:6px;right:6px;top:6px;bottom:24px;overflow:hidden;border-radius:1px;background:color-mix(in srgb,var(--ac) 22%,#fff);isolation:isolate}
+.pr-clip .m,.pr-clip video,.pr-clip img{display:block;width:100%;height:100%;object-fit:cover}
+.pr-cap{position:absolute;left:6px;right:6px;bottom:0;height:24px;display:flex;align-items:center;justify-content:center;font-family:'Yomogi','M PLUS Rounded 1c',cursive;font-size:clamp(11px,1vw,14px);line-height:1;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-top:1px}
+.tp{position:absolute;z-index:3;left:50%;top:0;width:calc(clamp(46px,50%,96px)*var(--k,1));height:clamp(17px,1.9vw,24px);transform:translate3d(-50%,-50%,22px) rotate(var(--tr,0deg));filter:drop-shadow(0 1px 1px rgba(34,27,78,.28));pointer-events:none}
+.tp b{display:block;width:100%;height:100%;transition:transform .4s cubic-bezier(.3,2,.5,1)}
+.tp .p0{background:var(--tc)}
+.tp .p1{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.55) 0 4px,transparent 4px 8px),var(--tc)}
+.tp .p2{background:radial-gradient(circle,rgba(255,255,255,.8) 1.5px,transparent 2px) 0 0/8px 8px,var(--tc)}
+.tp .cz{clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 25%,calc(100% - 3px) 50%,100% 75%,calc(100% - 3px) 100%,3px 100%,0 75%,3px 50%,0 25%)}
+.tp .cd{clip-path:polygon(9% 0,100% 0,91% 100%,0 100%)}
+.fa.in .tp b{animation:tape .3s cubic-bezier(.3,1.7,.5,1) calc(var(--d,0s) + .5s) backwards}
+@keyframes tape{from{opacity:0;transform:scaleX(0) rotate(-8deg)}to{opacity:1;transform:none}}
+.fa.hv .tp b{transform:rotate(3deg) scale(1.04)}
+.fa.hv .tp:nth-of-type(2) b{transform:rotate(-3deg) scale(1.04)}
+
+/* ---------- profile ---------- */
+.me{position:relative;padding:6vh var(--pad) 0;text-align:center;overflow:hidden}
+.me-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding-bottom:5vh}
+.icon-ring{position:relative;width:clamp(120px,14vw,170px);aspect-ratio:1;border-radius:50%;padding:7px;box-shadow:5px 5px 0 var(--navy);border:3px solid var(--navy);overflow:hidden}
+.icon-ring::before{content:"";position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(var(--pink),var(--lemon),var(--mint),var(--cyan),var(--violet),var(--pink));animation:ringspin 6s linear infinite}
+@keyframes ringspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.icon-ring::before{animation:none}}
+.icon-ring img{position:relative;display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--navy);background:#fff}
+.me h3{font-family:var(--disp);font-weight:400;font-size:clamp(28px,5vw,64px);line-height:1.1}
+.me p{font-size:clamp(13px,1.3vw,16px);max-width:34em;line-height:1.7}
+.xbtn{display:inline-flex;align-items:center;gap:.6em;font-family:var(--lat);font-weight:800;font-size:clamp(15px,1.6vw,20px);padding:.7em 1.4em;border:3px solid var(--navy);border-radius:99px;background:var(--navy);color:#fff;box-shadow:4px 4px 0 var(--pink)}
+.xbtn{font-size:clamp(17px,1.9vw,24px);padding:.8em 1.6em}
+/* clickable buttons (PLAY/WATCH, X, BG switch): sticker-style press feel. Uses individual transform props (translate/scale) on elements GSAP does not own */
+.play,.xbtn,#bgSwitch{cursor:pointer;background-image:linear-gradient(var(--lemon),var(--lemon));background-repeat:no-repeat;background-position:0 0;background-size:0% 100%;transition:background-size .38s cubic-bezier(.6,0,.2,1),color .2s .08s,translate .26s cubic-bezier(.3,1.6,.5,1),scale .26s cubic-bezier(.3,1.6,.5,1),box-shadow .26s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+.play>span:last-child,.xbtn>span:last-child{display:inline-block}
+.play .pi{flex:none;width:1.1em;height:1.1em;margin-right:-.1em}
+@keyframes arrowFly{0%{translate:0 0;opacity:1}40%{translate:.9em -.9em;opacity:0}41%{translate:-.9em .9em;opacity:0}100%{translate:0 0;opacity:1}}
+@keyframes xHint{0%,76%,100%{scale:1}82%{scale:1.07}88%{scale:.97}94%{scale:1.03}}
+@keyframes xArrow{0%,78%,100%{translate:0 0}85%{translate:3px -3px}93%{translate:0 0}}
+@media (prefers-reduced-motion:no-preference){
+  .xbtn{animation:xHint 3.2s ease-in-out 1.5s infinite}
+  .xbtn>span:last-child{animation:xArrow 3.2s ease-in-out 1.5s infinite}
+}
+.play:focus-visible,.xbtn:focus-visible,#bgSwitch:focus-visible{outline:3px solid var(--navy);outline-offset:4px;background-size:100% 100%;color:var(--navy);translate:-2px -3px;scale:1.04;animation:none}
+.play:focus-visible{box-shadow:7px 8px 0 #fff}
+.xbtn:focus-visible{box-shadow:6px 7px 0 var(--pink)}
+#bgSwitch:focus-visible{box-shadow:4px 5px 0 var(--navy)}
+.play:focus-visible>span:last-child,.xbtn:focus-visible>span:last-child{animation:arrowFly .5s ease}
+@media (hover:hover) and (pointer:fine){
+  .play:hover,.xbtn:hover,#bgSwitch:hover{background-size:100% 100%;color:var(--navy);translate:-2px -3px;scale:1.04;animation:none}
+  .play:hover{box-shadow:7px 8px 0 #fff}
+  .xbtn:hover{box-shadow:6px 7px 0 var(--pink)}
+  #bgSwitch:hover{box-shadow:4px 5px 0 var(--navy)}
+  .play:hover>span:last-child,.xbtn:hover>span:last-child{animation:arrowFly .5s ease}
+}
+.play:active,.xbtn:active,#bgSwitch:active{translate:5px 5px;scale:.97;box-shadow:0 0 0 #fff;animation:none}
+.xbtn:active{translate:4px 4px;box-shadow:0 0 0 var(--pink)}
+#bgSwitch:active{translate:3px 3px;box-shadow:0 0 0 var(--navy)}
+@media (prefers-reduced-motion:reduce){
+  .play,.xbtn,#bgSwitch{transition:background-size .2s,color .2s}
+  .play:hover,.xbtn:hover,#bgSwitch:hover,.play:focus-visible,.xbtn:focus-visible,#bgSwitch:focus-visible,.play:active,.xbtn:active,#bgSwitch:active{translate:none!important;scale:none!important;animation:none!important}
+  .play>span,.xbtn>span{animation:none!important}
+}
+.mq{overflow:hidden;white-space:nowrap}
+.mq-track{display:flex;width:max-content;will-change:transform}
+.giant{font-family:var(--disp);font-size:clamp(70px,17vw,260px);line-height:1.05;padding:0 .3em;color:var(--navy)}
+.giant.o{color:transparent;-webkit-text-stroke:3px var(--navy)}
+.giant.p{color:var(--pink)}
+.foot{font-family:var(--lat);font-weight:800;font-size:12px;letter-spacing:.12em;padding:14px 0 18px}
+
+/* ---------- cursor ---------- */
+.cursor{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;display:none}
+.has-cursor .cursor{display:block}
+.has-cursor,.has-cursor *{cursor:none!important}
+.cursor-c{width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;background:var(--pink);border:3px solid var(--navy);display:grid;place-items:center;transform:scale(.17);transition:transform .35s cubic-bezier(.3,1.6,.5,1),background .2s;opacity:0}
+.has-cursor.moved .cursor-c{opacity:1}
+.cursor-c span{font-family:var(--lat);font-weight:800;font-size:15px;letter-spacing:.1em;color:#fff;opacity:0;transition:opacity .2s}
+.cursor.big .cursor-c{transform:scale(1);background:var(--navy)}
+.cursor.big .cursor-c span{opacity:1}
+.cursor.down .cursor-c{transform:scale(.12)}
+.cursor.big.down .cursor-c{transform:scale(.82)}
+
+/* ---------- back to top (paper plane sticker) ---------- */
+/* ---------- language switch ---------- */
+html[lang="en"] .l-ja{display:none!important}
+html:not([lang="en"]) .l-en{display:none!important}
+#langSw{position:fixed;z-index:7000;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 9px;border:3px solid var(--navy);border-radius:99px;background:#fff;color:var(--navy);box-shadow:4px 4px 0 var(--navy);font:800 12px/1 var(--lat);letter-spacing:.06em;cursor:pointer;transition:translate .15s,box-shadow .15s}
+#langSw svg{width:18px;height:18px;flex:none}
+#langSw i{font-style:normal;padding:5px 8px;border-radius:99px}
+html:not([lang="en"]) #langSw .o-ja,html[lang="en"] #langSw .o-en{background:var(--navy);color:#fff}
+#langSw:focus-visible{outline:3px solid var(--navy);outline-offset:4px}
+@media (hover:hover) and (pointer:fine){#langSw:hover{translate:-1px -2px;box-shadow:6px 7px 0 var(--navy)}}
+#langSw:active{translate:3px 3px;box-shadow:1px 1px 0 var(--navy)}
+@media (max-width:600px){#langSw{font-size:11px;padding:4px 5px 4px 7px;border-width:2.5px;box-shadow:3px 3px 0 var(--navy)}#langSw svg{width:16px;height:16px}#langSw i{padding:4px 6px}}
+#toTop{position:fixed;z-index:7000;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:68px;height:68px;border-radius:50%;background:var(--lemon);border:3px solid var(--navy);box-shadow:5px 5px 0 var(--navy);display:grid;place-items:center;visibility:hidden;cursor:pointer;transition:translate .26s cubic-bezier(.3,1.6,.5,1),box-shadow .26s cubic-bezier(.3,1.6,.5,1)}
+#toTop .tt-ico{display:block;width:36px;height:36px;pointer-events:none}
+#toTop .tt-ico svg,.tt-fly svg{display:block;width:100%;height:100%;overflow:visible}
+#toTop .tt-lab{position:absolute;left:50%;bottom:-11px;translate:-50% 0;font:800 10px/1 var(--lat);letter-spacing:.12em;padding:4px 7px 3px;border-radius:99px;background:var(--navy);color:#fff;pointer-events:none}
+#toTop:focus-visible{outline:3px solid var(--navy);outline-offset:5px;translate:-2px -4px;box-shadow:7px 9px 0 var(--navy)}
+@media (hover:hover) and (pointer:fine){#toTop:hover{translate:-2px -4px;box-shadow:7px 9px 0 var(--navy)}}
+#toTop:active{translate:4px 4px;box-shadow:1px 1px 0 var(--navy)}
+.tt-fly{position:fixed;left:0;top:0;z-index:7001;width:42px;height:42px;margin:-21px 0 0 -21px;pointer-events:none;will-change:transform}
+.tt-bit{position:fixed;left:0;top:0;z-index:7001;pointer-events:none;border:2px solid var(--navy)}
+@media (max-width:600px){#toTop{width:56px;height:56px}#toTop .tt-ico{width:30px;height:30px}}
+
+@media (max-width:767px){
+  .gp,.gp.rev{grid-template-columns:1fr;min-height:0}
+  .gp.rev .gp-mw{order:0}
+  .gp-no{font-size:44vw;bottom:-.05em}
+  .gp-media{box-shadow:6px 6px 0 var(--navy)}
+  .pal{width:52px;top:2px}
+  .band-a{top:14%}.band-b{top:48%}
+  .fgrid{--fg:12px}
+  .pr-clip{left:5px;right:5px;top:5px;bottom:21px}
+  .pr-cap{left:5px;right:5px;height:21px;font-size:11px}
+}
+@media (max-width:600px){
+  /* スマホ: アイコン→肩書→名前を縦に積んで名前を大きく見せる。スライドは横長にして高さを抑える */
+  /* スマホ: 大きなアイコンと名前を画面の中央に置き、その下に小さくスライドを載せる */
+  .hero{--tf:min(14.4vw,7.4svh)}
+  .title{left:0;right:0;top:40svh;translate:0 -50%;flex-direction:column;align-items:center;justify-content:flex-start;gap:.52em;font-size:var(--tf)}
+  .t-icon{width:3.3em;height:3.3em}
+  .t-col{align-items:flex-start}
+  .t-en{font-size:max(.26em,13px);padding-left:.38em;align-self:center;margin-top:.7em}
+  .t-role{font-size:max(.27em,13px);margin:0 0 -.08em -.15em;transform:rotate(-5deg);transform-origin:0 100%}
+  .screen{--sw:min(53vw,25svh);--sa:16/9;--ttlw:1.1;left:calc((100% - var(--sw))/2);right:auto;top:calc(40svh + var(--tf)*2.98 + 6.5svh)}
+  .scr-ttl{right:auto;left:50%;translate:-50% 0;bottom:auto;top:calc(100% + 12px);max-width:none;text-align:center;font-size:calc(14px*var(--ts,1))}
+  .scr-num{left:-16%;bottom:-10%}
+  .bands{bottom:1.5svh;height:13svh}
+  .bands-top{display:block;bottom:auto;top:max(1.6svh,13px)}
+  .bands-top .band-a{background:var(--lemon);color:var(--navy);transform:rotate(3deg)}
+  .bands-top .band-a span{text-shadow:none}
+  .bands-top .band-b{background:var(--pink);color:#fff;transform:rotate(-2deg)}
+  .bands-top .band-b span{text-shadow:2px 2px 0 var(--navy)}
+  .band span{font-size:17px}
+  .scr-tilt{transform:rotate(-2.5deg)}
+  .scr-frame{box-shadow:7px 7px 0 var(--ac,var(--pink))}
+  .scr-num{font-size:calc(var(--sw)*.26)}
+  /* 飾りマーク4つ: アイコンの右上・左上と、スライドの左・右。高さはすべてずらす */
+  .d1{left:auto;right:9vw;top:calc(40svh - var(--tf)*2.75)}
+  .d4{left:8vw;top:calc(40svh - var(--tf)*1.55);width:24px;height:24px}
+  .d3{left:8vw;top:calc(40svh + var(--tf)*2.98 + 7.5svh)}
+  .d2{right:8vw;top:calc(40svh + var(--tf)*2.98 + 14svh)}
+}
+@media (prefers-reduced-motion:reduce){
+  .js .hero .ch,.js .hero .t-icon,.js .hero .t-en,.js .hero .t-role,.js .hero .chip,.js .hero .band,.js .hero .deco,.js .hero .screen{opacity:1}
+  *{animation:none!important}
+}
+</style>
+<script>/* 表示言語: ?lang= > 保存値 > ブラウザの言語（日本語以外は英語） */
+(function(){var l=null;try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('lang');}catch(e){}
+if(l!=='ja'&&l!=='en')l=/^ja/i.test(navigator.language||'ja')?'ja':'en';document.documentElement.lang=l;})();
+</script>
 </head>
-<body class="text-slate-800 antialiased selection:bg-pink-200 selection:text-pink-900">
+<body>
+<canvas id="stage" aria-hidden="true"></canvas>
+<canvas id="cut" aria-hidden="true"></canvas>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="clipDefs"></defs></svg>
+<div id="intro" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor-c"><span>VIEW</span></div></div>
 
-    <!-- 背景のプロシージャルアニメーション用キャンバス -->
-    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
+<main>
+  <header class="hero" id="hero">
+    <h1 class="title" aria-label="もりあーてぃ（MoriArty）" id="title"></h1>
+    <a class="screen" id="screen" href="#games" data-cursor="GO" aria-label="代表作ミニリール（クリックでゲーム一覧へ）">
+      <div class="scr-tilt">
+        <div class="scr-frame" id="scrFrame"></div>
+        <div class="scr-num" aria-hidden="true"><span id="scrNum">01</span></div>
+        <div class="scr-ttl" id="scrTtl" aria-hidden="true"></div>
+      </div>
+    </a>
+    <!-- スマホ幅のときだけ、上にも帯を出して名前を上下からはさむ -->
+    <div class="bands bands-top" aria-hidden="true">
+      <div class="band band-a mq"><div class="mq-track" data-phrase="GAME DEV ★ 3DCG ★ FAN ART ★ "></div></div>
+      <div class="band band-b mq"><div class="mq-track" data-phrase="GAME DEV ★ 3DCG ★ FAN ART ★ "></div></div>
+    </div>
+    <div class="bands" aria-hidden="true">
+      <div class="band band-a mq"><div class="mq-track" data-phrase="GAME DEV ★ 3DCG ★ FAN ART ★ "></div></div>
+      <div class="band band-b mq"><div class="mq-track" data-phrase="GAME DEV ★ 3DCG ★ FAN ART ★ "></div></div>
+    </div>
+    <div class="deco d1"><svg viewBox="-50 -50 100 100"><path d="M0,-46 L12,-12 L46,0 L12,12 L0,46 L-12,12 L-46,0 L-12,-12Z" fill="#ffe03a" stroke="#221b4e" stroke-width="6" stroke-linejoin="round"/></svg></div>
+    <div class="deco d2"><svg viewBox="-50 -50 100 100"><circle r="38" fill="#21cdff" stroke="#221b4e" stroke-width="7"/></svg></div>
+    <div class="deco d3"><svg viewBox="-50 -50 100 100"><path d="M0,-46 L12,-12 L46,0 L12,12 L0,46 L-12,12 L-46,0 L-12,-12Z" fill="#3fe79a" stroke="#221b4e" stroke-width="6" stroke-linejoin="round"/></svg></div>
+    <div class="deco d4"><svg viewBox="-50 -50 100 100"><path d="M-14,-46H14V-14H46V14H14V46H-14V14H-46V-14H-14Z" fill="#ff5c9e" stroke="#221b4e" stroke-width="6" stroke-linejoin="round"/></svg></div>
+  </header>
 
-    <!-- メインコンテンツ -->
-    <main class="min-h-screen relative z-10">
-        <div class="space-y-16 p-6 md:p-12 lg:p-24">
+  <section class="sec" id="games" aria-label="ゲーム">
+    <div class="sband a mq" aria-hidden="true"><div class="mq-track" data-phrase="GAMES ★ PLAY ★ GAME DEV ★ "></div></div>
+    <div class="sec-head" id="gamesHead">
+      <div class="sweep" aria-hidden="true"><i></i><i></i></div>
+      <div class="sec-top"><h2 id="gamesTitle" aria-label="GAMES"></h2><span class="stk stk-games" id="stkGames"></span></div>
+    </div>
+    <div class="games" id="gamesList"></div>
+  </section>
 
-            <!-- Hero / Profile Section -->
-            <div class="max-w-5xl mx-auto">
-            <section class="glass-panel p-8 md:p-12 rounded-[2rem] text-center space-y-6 transform transition duration-500 hover:shadow-2xl hover:-translate-y-1">
-                <div class="relative inline-block">
-                    <!-- アイコン画像（DiceBear APIを使用して可愛いアバターを生成） -->
-                    <img src="images/profile_icon.jpg" alt="Profile Icon" class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto border-4 border-white shadow-lg object-cover bg-white">
+  <section class="sec fan" id="fanart" aria-label="ファンアート">
+    <div class="sband b mq" aria-hidden="true"><div class="mq-track" data-phrase="FAN ART ★ ILLUST ★ 3D ★ PAINT ★ "></div></div>
+    <div class="sec-head" id="fanHead">
+      <div class="sweep" aria-hidden="true"><i></i><i></i></div>
+      <div class="sec-top">
+        <svg class="fh" id="fanTitle" viewBox="0 0 590 176" role="img" aria-label="FAN ART">
+          <path id="fhBrush" transform="scale(.72 1)" d="M12 160C200 148 420 170 808 152" stroke="#ffe03a" stroke-width="12" stroke-linecap="round" fill="none"/>
+          <text id="fhSh" x="15" y="144" font-family="Kuramubon,Dela Gothic One,M PLUS Rounded 1c,sans-serif" font-size="140" fill="#ff5c9e" aria-hidden="true">FAN ART</text>
+          <text id="fhText" x="8" y="136" font-family="Kuramubon,Dela Gothic One,M PLUS Rounded 1c,sans-serif" font-size="140" fill="#221b4e" stroke="#221b4e" stroke-width="2" stroke-linejoin="round" paint-order="stroke">FAN ART</text>
+        </svg>
+        <span class="stk stk-fan" id="stkFan"></span>
+      </div>
+      <svg class="pal" viewBox="0 0 100 90" aria-hidden="true"><path d="M50 4C24 4 4 22 4 46c0 21 15 38 34 38 9 0 10-6 7-11-4-6 0-12 8-12h14c17 0 29-9 29-24C96 20 76 4 50 4Z" fill="#fff" stroke="#221b4e" stroke-width="4" stroke-linejoin="round"/><circle cx="26" cy="42" r="8" fill="#ff5c9e" stroke="#221b4e" stroke-width="3"/><circle cx="42" cy="24" r="8" fill="#ffe03a" stroke="#221b4e" stroke-width="3"/><circle cx="64" cy="24" r="8" fill="#3fe79a" stroke="#221b4e" stroke-width="3"/><circle cx="80" cy="42" r="8" fill="#21cdff" stroke="#221b4e" stroke-width="3"/></svg>
+    </div>
+    <div class="fan-board"><div class="fgrid" id="fgrid"></div></div>
+  </section>
 
-                </div>
-                <div>
-                    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-3 text-slate-800">
-                        もりあーてぃ🍒
-                    </h1>
-                    <p class="text-lg md:text-xl text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
-                        個人ゲームの開発をしたり、<br class="hidden md:block">VTuberのファンゲーム作りや3Dのファンアートなどを作って推し活をしています。<br class="hidden md:block">
-                        本業はプログラマー。
-                    </p>
-                </div>
-            </section>
-            </div>
+  <footer class="me" id="me">
+    <div class="me-box">
+      <div class="icon-ring" id="iconRing"><img id="meIcon" alt="" width="170" height="170"></div>
+      <h3 id="meName"></h3>
+      <p id="meBio"></p>
+      <a class="xbtn" id="meX" target="_blank" rel="noopener"><span>𝕏</span><span id="meHandle"></span><span>↗</span></a>
+    </div>
+    <div class="mq" id="mq1" aria-hidden="true"><div class="mq-track" data-giant="1"></div></div>
+    <div class="mq" id="mq2" aria-hidden="true"><div class="mq-track" data-giant="2"></div></div>
+    <div class="foot">© 2026 MORIARTY</div>
+  </footer>
+</main>
+<button type="button" id="langSw" aria-label="言語を切り替える / Switch language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3.2 3 15.8 0 19M12 2.5c-3 3.2-3 15.8 0 19"/></svg><i class="o-ja">JP</i><i class="o-en">EN</i></button>
+<button type="button" id="toTop" aria-label="トップへ戻る"><span class="tt-ico"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M36 4 L16 22 L19 35 Z" fill="#dfe6ff" stroke="#221b4e" stroke-width="3" stroke-linejoin="round"/><path d="M36 4 L4 17 L16 22 Z" fill="#fff" stroke="#221b4e" stroke-width="3" stroke-linejoin="round"/></svg></span><span class="tt-lab">TOP</span></button>
 
-            <!-- Works Section -->
-            <section class="space-y-8">
-                <h2 class="text-4xl font-extrabold text-center drop-shadow-sm text-slate-800">
-                    Works
-                </h2>
+<script src="works.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script>
+(function(){
+'use strict';
+document.documentElement.classList.add('js');
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+const SMALL=innerWidth<768||matchMedia('(pointer:coarse)').matches;
+const W=window.WORKS||[], P=window.PROFILE||{};
+const NAVY='#221b4e';
+const ACC=['var(--pink)','var(--cyan)','var(--lemon)','var(--mint)','var(--orange)','var(--violet)'];
+const ACC_HEX=['#ff5c9e','#21cdff','#ffe03a','#3fe79a','#ff9a3d','#9b7dff'];
+const TOOL={unity:'Unity',ue:'Unreal',blender:'Blender',handdrawn:'手描き',mmd:'MMD',vroid:'VRoid'};
+const TOOL_EN={handdrawn:'Hand-drawn'};
+const GENRE={game:'GAME',fanart:'FAN ART'};
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+scrollTo(0,0);
+gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ignoreMobileResize:true});
 
-                <!-- タグフィルタUI -->
-                <div class="flex flex-col items-center gap-3">
-                    <!-- ジャンル -->
-                    <div class="flex flex-wrap justify-center gap-2">
-                        <button class="filter-btn genre-btn active px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="genre" data-value="all">All</button>
-                        <button class="filter-btn genre-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-1" data-filter="genre" data-value="game"><i class="fa-solid fa-gamepad"></i> ゲーム</button>
-                        <button class="filter-btn genre-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="genre" data-value="fanart"><i class="fa-solid fa-palette"></i> ファンアート</button>
-                    </div>
-                    <!-- ツール -->
-                    <div class="flex flex-wrap justify-center gap-2">
-                        <button class="filter-btn tool-btn active px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="all">All</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="ue">UE</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="blender">Blender</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="unity">Unity</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="handdrawn">手描き</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="mmd">MMD</button>
-                        <button class="filter-btn tool-btn px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 transform hover:scale-105" data-filter="tool" data-value="vroid">VRoid</button>
-                    </div>
-                </div>
+/* =========================================================
+   1. FX: reactions are routed to the background of the area on screen (Cut = hero / FAN ART, Stage = GAMES)
+   ========================================================= */
+let BGREF=null;
+const FX={
+  // splash: normalized coords, origin top-left
+  splash(nx,ny,colIdx){
+    if(!BGREF)return;const a=BGREF.area(),x=nx*innerWidth,y=ny*innerHeight;
+    if(a==='hero'&&Cut){Cut.disc(x,y,ACC_HEX[wrapN(colIdx,6)]);Cut.burst(x,y,2,colIdx);}
+    else if(a==='stage'&&Stage)Stage.ripple(x,y,1.0);
+    else if(a==='cut'&&Cut)Cut.burst(x,y,3,colIdx);
+  },
+  // recolour the nearest hero blob with the work's accent colour
+  tint(nx,ny,colIdx){
+    if(BGREF&&BGREF.area()==='hero'&&Cut)Cut.tint(nx*innerWidth,ny*innerHeight,ACC_HEX[wrapN(colIdx,6)]);
+  },
+  // burst: origin bottom-left (ny points up)
+  burst(nx,ny,n,force,rad,off){
+    if(!BGREF||!Cut)return;const a=BGREF.area();
+    if(a==='hero'||a==='cut')Cut.burst(nx*innerWidth,(1-ny)*innerHeight,Math.min(n,6),off);
+  }
+};
 
-                <!-- 作品カードグリッド -->
-                <div id="works-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+/* =========================================================
+   2. Splash shape (SVG) generator
+   ========================================================= */
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function splashPath(cx,cy,R,n,seed,drops){
+  const r=rng(seed),pts=[];
+  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,sp=i%2===0;const rad=R*(sp?.95+r()*.5:.5+r()*.2);pts.push([cx+Math.cos(a)*rad,cy+Math.sin(a)*rad]);}
+  const f=v=>v.toFixed(4);let d=`M${f(pts[0][0])},${f(pts[0][1])}`;
+  for(let i=0;i<n;i++){
+    const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+    d+=`C${f(p1[0]+(p2[0]-p0[0])/6)},${f(p1[1]+(p2[1]-p0[1])/6)},${f(p2[0]-(p3[0]-p1[0])/6)},${f(p2[1]-(p3[1]-p1[1])/6)},${f(p2[0])},${f(p2[1])}`;
+  }
+  d+='Z';
+  for(let k=0;k<(drops||0);k++){
+    const a=r()*Math.PI*2,dist=R*(1.35+r()*.35),rr=R*(.05+r()*.07),x=cx+Math.cos(a)*dist,y=cy+Math.sin(a)*dist;
+    d+=`M${f(x-rr)},${f(y)}a${f(rr)},${f(rr)} 0 1,0 ${f(rr*2)},0a${f(rr)},${f(rr)} 0 1,0 ${f(-rr*2)},0Z`;
+  }
+  return d;
+}
+/* ---- 5 reveal transitions shared by the hero mini-reel and the GAMES panels ---- */
+const svgNS='http://www.w3.org/2000/svg';
+let clipN=0;
+const setMask=(el,w)=>{const P=el._P||120;const g=`repeating-linear-gradient(115deg,#000 0,#000 ${w.toFixed(1)}px,transparent ${w.toFixed(1)}px,transparent ${P}px)`;el.style.webkitMaskImage=g;el.style.maskImage=g;};
+const clearFx=el=>{el.style.clipPath='';el.style.webkitClipPath='';el.style.maskImage='';el.style.webkitMaskImage='';};
+const TRN=['circle','stripes','diamond','slats','iris'];
+const TR={
+  circle:{d:.9,init(el){gsap.set(el,{clipPath:'circle(0% at 50% 50%)'});},
+    play(el,d){return gsap.to(el,{clipPath:'circle(76% at 50% 50%)',duration:d,ease:'power3.inOut'});}},
+  stripes:{d:.85,init(el){el._P=Math.max(40,Math.round((el.offsetWidth||600)/7));setMask(el,0);},
+    play(el,d){el._P=Math.max(40,Math.round((el.offsetWidth||600)/7));const o={w:0};return gsap.to(o,{w:el._P+2,duration:d,ease:'power2.inOut',onUpdate:()=>setMask(el,o.w)});}},
+  diamond:{d:.9,init(el){gsap.set(el,{clipPath:'polygon(50% 50%,50% 50%,50% 50%,50% 50%)'});},
+    play(el,d){return gsap.to(el,{clipPath:'polygon(50% -70%,170% 50%,50% 170%,-70% 50%)',duration:d,ease:'power3.inOut'});}},
+  slats:{d:.8,init(el){gsap.set(el,{clipPath:'polygon(100% 0%,100% 0%,100% 100%,100% 100%)'});},
+    play(el,d){return gsap.to(el,{clipPath:'polygon(-45% 0%,100% 0%,100% 100%,-10% 100%)',duration:d,ease:'power3.inOut'});}},
+  iris:{d:.9,init(el){gsap.set(el,{clipPath:'inset(50% 50% 50% 50% round 50%)'});},
+    play(el,d){return gsap.to(el,{clipPath:`inset(0% 0% 0% 0% round ${el._round||22}px)`,duration:d,ease:'expo.inOut'});}}
+};
+const revealPrep=(el,type)=>TR[TRN[type%5]].init(el);
+function revealPlay(el,type,d){const t=TR[TRN[type%5]];const tw=t.play(el,d||t.d);tw.eventCallback('onComplete',()=>clearFx(el));return tw;}
 
-                    <!-- Work: 従業員がころがるゲーム -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="ue" data-date="2024-04-19" onclick="window.open('https://x.com/hashtag/%E5%BE%93%E6%A5%AD%E5%93%A1%E3%81%8C%E3%81%93%E3%82%8D%E3%81%8C%E3%82%8B%E3%82%B2%E3%83%BC%E3%83%A0','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.04.19</span>
-                            <span class="absolute top-3 left-3 z-20 text-xs font-bold text-yellow-900 bg-yellow-300/80 backdrop-blur-sm px-2 py-0.5 rounded-full inline-flex items-center gap-1"><i class="fa-solid fa-pause fa-xs"></i> 開発中断</span>
-                            <img src="images/korogaru.gif" alt="従業員がころがるゲーム" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">従業員がころがるゲーム</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">従業員がころがる横スクロールころがりアクション。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
+/* =========================================================
+   3. Build DOM from WORKS
+   ========================================================= */
+// hero title
+const TITLE='もりあーてぃ';
+const titleEl=$('#title');
+if(P.icon){
+  const ic=document.createElement('img');ic.className='t-icon';ic.src=P.icon;ic.alt='';ic.width=96;ic.height=96;ic.decoding='async';ic.setAttribute('aria-hidden','true');
+  titleEl.appendChild(ic);
+}
+const tcol=document.createElement('span');tcol.className='t-col';
+const trow=document.createElement('span');trow.className='t-row';
+[...TITLE].forEach(c=>{
+  const m=document.createElement('span');m.className='mask';
+  const sp=document.createElement('span');sp.className='ch';sp.textContent=c;
+  m.appendChild(sp);trow.appendChild(m);
+});
+const ten=document.createElement('span');ten.className='t-en';ten.textContent='MoriArty';ten.setAttribute('aria-hidden','true');
+const trole=document.createElement('span');trole.className='t-role';
+trole.innerHTML='<span class="l-ja">ゲームクリエイター</span><span class="l-en" lang="en">GAME CREATOR</span>';
+tcol.appendChild(trole);tcol.appendChild(trow);tcol.appendChild(ten);titleEl.appendChild(tcol);
 
-                    <!-- Work: Omen Tycoon お面タイクーン -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2026-02-03" onclick="window.open('https://moderndelta137.itch.io/omentycoon','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2026.02.03</span>
-                            <img src="images/omen_tycoon.jpg" alt="Omen Tycoon お面タイクーン" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">Omen Tycoon お面タイクーン</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">「配置」×「スコア」構築型ローグライト。夏祭りお面屋経営シミュレーション。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
-                            </div>
-                        </div>
-                    </article>
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const featured=W.filter(w=>w.featured).sort((a,b)=>a.featured-b.featured).slice(0,6);
 
-                    <!-- Work: ど根性大根 Die-con Run -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2023-02-12" onclick="window.open('https://atsu30.itch.io/die-con-run','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.02.12</span>
-                            <img src="images/die_con_run.png" alt="ど根性大根 Die-con Run" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ど根性大根 Die-con Run</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">Have you ever seen a radish flower? 食育×ランニングゲーム。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
-                            </div>
-                        </div>
-                    </article>
+// GAMES: big feature panels / FAN ART: taped prints
+const GAMES=W.filter(w=>w.genre==='game').sort((a,b)=>(a.featured||99)-(b.featured||99));
+const FANS=W.filter(w=>w.genre==='fanart');
+const gamesList=$('#gamesList');
+const STAR='<svg viewBox="-50 -50 100 100"><path d="M0,-46 L12,-12 L46,0 L12,12 L0,46 L-12,12 L-46,0 L-12,-12Z" fill="#ffe03a" stroke="#221b4e" stroke-width="6" stroke-linejoin="round"/></svg>';
+const L2=(ja,en)=>`<span class="l-ja">${ja}</span><span class="l-en" lang="en">${en}</span>`;
+const lnBoth=w=>splitTitle(w.title).map(l=>`<span class="ln l-ja"><span>${esc(l)}</span></span>`).join('')+`<span class="ln l-en" lang="en"><span>${esc(w.title_en||w.title)}</span></span>`;
+const splitTitle=t=>{const tk=t.split(/\s+/),asc=x=>/^[ -~]+$/.test(x);let cut=tk.length;for(let k=1;k<tk.length;k++){if(asc(tk[k-1])!==asc(tk[k])){cut=k;break;}}return cut<tk.length?[tk.slice(0,cut).join(' '),tk.slice(cut).join(' ')]:[t];};
+/* Steam のロゴ（Simple Icons、CC0）。STEAM ボタン用 */
+const STEAM_ICO='<svg class="pi" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>';
+const panels=GAMES.map((w,i)=>{
+  const a=document.createElement('article');
+  a.className='gp'+(i%2?' rev':'');a._ci=i;a._base=i%2?1.6:-1.6;
+  a.style.setProperty('--ac',ACC[i%6]);a.style.setProperty('--ac2',ACC[(i+3)%6]);
+  const media=w.video?`<video class="m" muted loop playsinline preload="none" poster="${esc(w.thumb)}" src="${esc(w.video)}"></video>`:`<img class="m" src="${esc(w.thumb)}" alt="${esc(w.title)}" loading="lazy" decoding="async">`;
+  const isItch=/itch\.io/.test(w.url),isSteam=/steampowered\.com/.test(w.url),lab=isSteam?'WISHLIST ON STEAM':(isItch||w.play)?'PLAY':'WATCH',ico=isSteam?STEAM_ICO:'',nn=String(i+1).padStart(2,'0');
+  a.innerHTML=`<div class="gp-bg" aria-hidden="true"></div><div class="gp-no" aria-hidden="true">${nn}</div>
+  <div class="gp-mw"><a class="gp-media" style="--ar:${w.w||16}/${w.h||9}" href="${esc(w.url)}" target="_blank" rel="noopener" data-cursor="PLAY" aria-label="${esc(w.title)}"><span class="gm-clip"><span class="par">${media}</span><span class="gl"></span><span class="ho"></span></span><span class="gm-no" aria-hidden="true">${nn}</span></a></div>
+  <div class="gp-info">
+    <div class="gp-tag"><span class="chip k">GAME ${nn}</span><span class="chip">${esc(w.date.slice(0,4))}</span>${(w.tools||[]).map(t=>`<span class="chip">${TOOL_EN[t]?L2(esc(TOOL[t]),esc(TOOL_EN[t])):esc(TOOL[t]||t)}</span>`).join('')}</div>
+    <h3 class="gp-t">${lnBoth(w)}</h3>
+    <p class="gp-d">${L2(esc(w.desc||''),esc(w.desc_en||w.desc||''))}</p>
+    <span class="mag"><a class="play" href="${esc(w.url)}" target="_blank" rel="noopener">${ico}${lab} <span>↗</span></a></span>
+  </div>
+  <div class="gp-star" style="${i%2?'left':'right'}:${12+(i%3)*2}px;top:${14+(i%2)*6}px" aria-hidden="true">${STAR}</div>`;
+  gamesList.appendChild(a);return a;
+});
+const gt=$('#gamesTitle');
+[...'GAMES'].forEach(c=>{const m=document.createElement('span');m.className='ch2';const s=document.createElement('span');s.textContent=c;m.appendChild(s);gt.appendChild(m);});
 
-                    <!-- Work: ParaX -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2022-02-18" onclick="window.open('https://atsu30.itch.io/parax','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.02.18</span>
-                            <img src="images/parax.png" alt="ParaX" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ParaX</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">2D横スクロールプラットフォーマーとリズムゲームの2画面構成。GGJ2022作品。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
-                            </div>
-                        </div>
-                    </article>
+const fgrid=$('#fgrid');
+const TAPE_C=['rgba(255,92,158,.72)','rgba(33,205,255,.70)','rgba(255,224,58,.82)','rgba(63,231,154,.74)'];
+function tapesHTML(i){
+  const R=rng(i*53+11),lay=Math.floor(R()*4);
+  const mk=(left,top,rot,k)=>`<i class="tp" style="left:${left};top:${top};--tr:${rot.toFixed(1)}deg;--k:${k}"><b class="p${Math.floor(R()*3)} c${R()<.5?'z':'d'}" style="--tc:${TAPE_C[Math.floor(R()*4)]}"></b></i>`;
+  const j=a=>(R()-.5)*2*a;
+  if(lay===0)return mk('50%','0',j(7),1.1);
+  if(lay===1)return mk('0','0',-38+j(7),.8)+mk('100%','0',38+j(7),.8);
+  if(lay===2)return mk('0','0',-40+j(6),.8)+mk('100%','100%',-40+j(6),.8);
+  return mk((30+R()*40).toFixed(0)+'%','0',j(12),1);
+}
+const tiles=FANS.map((w,i)=>{
+  const a=document.createElement('a');
+  a.className='fa';a.href=w.url;a.target='_blank';a.rel='noopener';a.dataset.cursor='VIEW';a.setAttribute('aria-label',w.title);
+  a.style.setProperty('--ac',ACC[(i+1)%6]);a._ci=i+1;a._w=w;
+  const R=rng(i*29+5);a._base=(R()<.5?-1:1)*(.8+R()*2.2);
+  const media=w.video?`<video class="m" muted loop playsinline preload="none" poster="${esc(w.thumb)}" src="${esc(w.video)}"></video>`:`<img class="m" src="${esc(w.thumb)}" alt="${esc(w.title)}" loading="lazy" decoding="async">`;
+  a.innerHTML=`<span class="pr"><span class="pr-clip"><span class="par">${media}</span><span class="gl"></span><span class="ho"></span></span><span class="pr-cap">${L2(esc(w.title),esc(w.title_en||w.title))}</span>${tapesHTML(i)}</span>`;
+  fgrid.appendChild(a);return a;
+});
 
-                    <!-- Work: Voxmare -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2020-10-20" onclick="window.open('https://atsu30.itch.io/voxmare','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2020.10.20</span>
-                            <img src="images/voxmare.png" alt="Voxmare" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">Voxmare</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">相手の弾を跳ね返して戦うシューティングゲーム。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: あくしおファンアート -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2024-08-23" onclick="window.open('https://x.com/MoriArty_30/status/1827006706217574777','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.08.23</span>
-                            <img src="images/Toon_AquShio_05_Minecraft.png" alt="あくしおファンアート" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">あくしおファンアート</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">あくしお初のファンアート。卒業してもあくしおは永遠。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 1: 8番目の大きめの門 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="ue" data-date="2024-06-30" onclick="window.open('https://x.com/MoriArty_30/status/1807263406569001057','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.06.30</span>
-                            <img src="images/eighth_gate.png" alt="8番目の大きめの門" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">8番目の大きめの門</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">どっとライブ・APPLANDの無料ファンゲーム。どっとライブの倉庫に不思議な間違い探しを用意しました。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 2: アプランドロップ -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="game" data-tool="unity" data-date="2025-10-25" onclick="window.open('https://x.com/MoriArty_30/status/1982141796168901118','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2025.10.25</span>
-                            <span class="absolute top-3 left-3 z-20 text-xs font-bold text-yellow-900 bg-yellow-300/80 backdrop-blur-sm px-2 py-0.5 rounded-full inline-flex items-center gap-1"><i class="fa-solid fa-hammer fa-xs"></i> 開発中</span>
-                            <img src="images/appland_drop.gif" alt="アプランドロップ" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">アプランドロップ</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">アプランのメンバーを揃えて効果発動！爽快テトリス風ファンゲーム。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-pink-100 text-pink-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-gamepad fa-xs"></i> ゲーム</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Unity</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 3: ランドセルばあちゃる -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2024-07-03" onclick="window.open('https://x.com/MoriArty_30/status/1808564900173918661','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.07.03</span>
-                            <img src="images/ChieriVirtualSchoolBag.png" alt="ランドセルを背負っているところをちえりちゃんに見つかるばあちゃる" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ランドセルばあちゃる</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ランドセルを背負っているところをちえりちゃんに見つかるばあちゃる。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 4: ちえりーらんど従業員募集ポスター -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2024-06-25" onclick="window.open('https://x.com/MoriArty_30/status/1805664703747965200','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2024.06.25</span>
-                            <img src="images/Chieri-Land_Poster_01_big.png" alt="ちえりーらんど従業員募集ポスター" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりーらんど従業員募集ポスター</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりーらんどの従業員募集ポスター。一緒にゴミ箱を並べませんか？</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 5: ピノ様ファンアート -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="handdrawn" data-date="2023-10-21" onclick="window.open('https://x.com/MoriArty_30/status/1715633352437600294','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.10.21</span>
-                            <img src="images/pino_fanart.png" alt="ピノ様ファンアート" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ピノ様ファンアート</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ピノ様の手描きイラストファンアート。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-green-100 text-green-600">手描き</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: 桜吹雪とちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2022-04-06" onclick="window.open('https://x.com/MoriArty_30/status/1511673759731953672','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.04.06</span>
-                            <img src="images/sakura_chieri.gif" alt="桜吹雪とちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">桜吹雪とちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">初めてのファンアート。アニメヒロインの初登場シーンの運命的な出会い感を目指しました。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ティファ衣装ちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-04-29" onclick="window.open('https://x.com/MoriArty_30/status/1520007585109217282','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.04.29</span>
-                            <img src="images/VRoidChieri.png" alt="ティファ衣装ちえりちゃん" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ティファ衣装ちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ティファ衣装のちえりちゃん。VRoidで作ってみた。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: RPG酒場の看板娘ちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-01" onclick="window.open('https://x.com/MoriArty_30/status/1520776133242851328','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.01</span>
-                            <img src="images/waitress_chieri.gif" alt="RPG酒場の看板娘ちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" style="object-position: center 20%">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">RPG酒場の看板娘ちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">RPG酒場で働く看板娘のちえりちゃん。こんな娘がいる酒場なら通っちゃいますね。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ロリちえり -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-06" onclick="window.open('https://x.com/MoriArty_30/status/1522511975460220931','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.06</span>
-                            <img src="images/loli_chieri.jpg" alt="ロリちえり" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ロリちえり</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">こどもの日ということでロリちえりを作りました。4周年おめでとう！</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: 水着姿のちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue vroid" data-date="2022-05-23" onclick="window.open('https://x.com/MoriArty_30/status/1528726400470945792','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.23</span>
-                            <img src="images/chieri_swimsuit.gif" alt="水着姿のちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">水着姿のちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">水着姿のちえりちゃん。UEとVRoidで制作。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ブラックちえり -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="ue" data-date="2022-05-29" onclick="window.open('https://x.com/MoriArty_30/status/1530907814066987008','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.05.29</span>
-                            <img src="images/black_chieri.gif" alt="ブラックちえり" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ブラックちえり</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">エルデンのボスとして出てきそうなブラックちえりを作りました。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">UE</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: 従業員衣装ちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-08-01" onclick="window.open('https://x.com/MoriArty_30/status/1554129245835706369','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.01</span>
-                            <img src="images/VRoid_JyugyoinChieri.png" alt="従業員衣装ちえりちゃん" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">従業員衣装ちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃんに従業員衣装つくって着せてみたらかわいすぎた。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: バニーの日ちえりちゃん -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="vroid" data-date="2022-08-04" onclick="window.open('https://x.com/MoriArty_30/status/1555193641316286466','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.04</span>
-                            <img src="images/bunny_chieri.gif" alt="バニーの日ちえりちゃん" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" style="object-position: center 20%">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">バニーの日ちえりちゃん</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちょっとのり遅れたバニーの日ちえりちゃん。ARで作ってみたよ。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">VRoid</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: 反省のポーズ -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-08-31" onclick="window.open('https://x.com/MoriArty_30/status/1564779895313469442','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.08.31</span>
-                            <img src="images/chieri_blender_hansei.png" alt="反省のポーズ" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">反省のポーズ！</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">反省のポーズ！</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ちえりちゃん フィギュア風 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-09-08" onclick="window.open('https://x.com/MoriArty_30/status/1567814825463656448','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.09.08</span>
-                            <img src="images/chieri_figure.png" alt="ちえりちゃん フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃん フィギュア風</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃんのMMDをフィギュア風にしてみました。フィギュア化待ってます！</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ピノ様 フィギュア風 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-10-04" onclick="window.open('https://x.com/MoriArty_30/status/1577273909946159105','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.04</span>
-                            <img src="images/pino_figure.png" alt="ピノ様 フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ピノ様 フィギュア風</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">フィギュア風第二弾はピノ様！初のピノ様ファンアート。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: ミルコ フィギュア風 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2022-10-12" onclick="window.open('https://x.com/MoriArty_30/status/1580145119897874433','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.12</span>
-                            <img src="images/miruko_figure.png" alt="ミルコ フィギュア風" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ミルコ フィギュア風</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">フィギュア風にしてみた第3弾。ヒロアカのミルコ。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work: チャイナちえりちゃんでKAGURA -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="mmd" data-date="2022-10-30" onclick="window.open('https://x.com/MoriArty_30/status/1586736087371612160','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2022.10.30</span>
-                            <img src="images/chieri_kagura.gif" alt="チャイナちえりちゃんでKAGURA" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">チャイナちえりちゃんでKAGURA</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">チャイナ衣装の花京院ちえりちゃんでKAGURA♪</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">MMD</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 6: ちえりちゃん誕生日2023 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="blender" data-date="2023-03-29" onclick="window.open('https://x.com/MoriArty_30/status/1641079828752519169','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.03.29</span>
-                            <img src="images/Chieri2023Birthday.png" alt="ちえりちゃんお誕生日2023" class="w-full h-full object-cover object-top transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃんお誕生日2023</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃん誕生日おめでとう！従業員からケーキのプレゼント。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-blue-100 text-blue-600">Blender</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Work 7: ちえりちゃん祝11万人 -->
-                    <article class="work-card glass-panel rounded-3xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 active:scale-95" data-genre="fanart" data-tool="handdrawn" data-date="2023-09-14" onclick="window.open('https://x.com/MoriArty_30/status/1702044382785061038','_blank')">
-                        <div class="h-56 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                            <span class="absolute top-3 right-3 z-20 text-xs font-bold text-white/90 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">2023.09.14</span>
-                            <img src="images/chieri_fanart.png" alt="ちえりちゃん祝11万人ファンアート" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2 text-slate-800">ちえりちゃん祝11万人</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-3">ちえりちゃん11万人記念の手描きファンアート。初の手描き作品。</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="tag-pill bg-purple-100 text-purple-600 inline-flex items-center gap-0.5"><i class="fa-solid fa-palette fa-xs"></i> ファンアート</span>
-                                <span class="tag-pill bg-green-100 text-green-600">手描き</span>
-                            </div>
-                        </div>
-                    </article>
-
-
-
-                </div>
-            </section>
-
-            <div class="max-w-5xl mx-auto">
-            <!-- Contact Section -->
-            <section class="glass-panel p-10 rounded-[2rem] text-center max-w-2xl mx-auto">
-                <h2 class="text-3xl font-extrabold mb-4 text-slate-800">Contact</h2>
-                <p class="text-slate-600 mb-8">お仕事の相談や何かあればXまで。</p>
-                
-                <!-- X (Twitter) Link -->
-                <a href="https://x.com/MoriArty_30" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-black text-white hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl hover:scale-110 transform duration-300 group">
-                    <!-- X Logo SVG -->
-                    <svg viewBox="0 0 24 24" aria-hidden="true" class="w-8 h-8 fill-current group-hover:rotate-12 transition-transform duration-300"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.96H5.078z"></path></svg>
-                </a>
-            </section>
-            
-            <footer class="text-center text-slate-400 text-sm mt-12">
-                &copy; <span id="year"></span> もりあーてぃ. All rights reserved.
-            </footer>
-            </div>
-        </div>
-    </main>
-
-    <!-- Works フィルタリングスクリプト -->
-    <script>
-        (function() {
-            let activeGenre = 'all';
-            let activeTool = 'all';
-
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const workCards = document.querySelectorAll('.work-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const filterType = btn.dataset.filter;
-                    const value = btn.dataset.value;
-
-                    // 同じグループ内のactiveを解除して自分をactiveに
-                    const groupClass = filterType === 'genre' ? 'genre-btn' : 'tool-btn';
-                    document.querySelectorAll('.' + groupClass).forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    if (filterType === 'genre') activeGenre = value;
-                    if (filterType === 'tool') activeTool = value;
-
-                    applyFilter();
-                });
-            });
-
-            function applyFilter() {
-                workCards.forEach(card => {
-                    const genre = card.dataset.genre;
-                    const tools = card.dataset.tool.split(' ');
-                    const matchGenre = activeGenre === 'all' || genre === activeGenre;
-                    const matchTool = activeTool === 'all' || tools.includes(activeTool);
-
-                    if (matchGenre && matchTool) {
-                        card.classList.remove('hidden-by-filter');
-                    } else {
-                        card.classList.add('hidden-by-filter');
-                    }
-                });
-            }
-
-            // 初期表示: data-date降順でソート
-            const grid = document.getElementById('works-grid');
-            const sorted = Array.from(workCards).sort((a, b) => b.dataset.date.localeCompare(a.dataset.date));
-            sorted.forEach(card => grid.appendChild(card));
-        })();
-    </script>
-
-    <!-- プロシージャル背景アニメーションのスクリプト -->
-    <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        let width, height;
-        let tiles = [];
-        const TILE_SIZE = 12;   // ドットの基本サイズを小さく
-        const TILE_SPACING = 30; // 隙間を広げて抜け感（余白）を作る
-        
-        let mouse = { x: -1000, y: -1000 };
-        let lastMousePos = { x: -1000, y: -1000 }; // 波紋発生用の前回のマウス位置
-        let ripples = []; // クリックによる波紋のエフェクトを管理する配列
-
-        // キャンバスのリサイズとタイルの初期化
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            initTiles();
+/* bento packer: pick tile sizes from each thumbnail's aspect ratio, then search (seeded) for a layout with zero holes */
+function sizeOpts(r,cols){
+  if(cols<=2){
+    if(r<.7)return [[1,2]];
+    if(r<.95)return [[1,2],[1,1],[1,1]];
+    if(r<1.3)return [[1,1],[1,1],[2,2]];
+    return [[2,1],[2,1],[1,1]];
+  }
+  if(r<.7)return [[1,2],[2,3],[2,3]];
+  if(r<.95)return [[2,3],[2,2]];
+  if(r<1.3)return [[1,1],[2,2],[2,2],[3,3]];
+  return [[2,1],[3,2],[3,2],[4,2]];
+}
+function packOnce(sizes,cols){
+  const occ=[];const out=[];let rows=0;
+  const get=(r,c)=>occ[r]&&occ[r][c];
+  for(const [w,h] of sizes){
+    let done=false;
+    for(let r=0;!done;r++){
+      for(let c=0;c<=cols-w&&!done;c++){
+        let ok=true;
+        for(let y=0;y<h&&ok;y++)for(let x=0;x<w;x++)if(get(r+y,c+x)){ok=false;break;}
+        if(ok){
+          for(let y=0;y<h;y++){occ[r+y]=occ[r+y]||[];for(let x=0;x<w;x++)occ[r+y][c+x]=1;}
+          out.push({x:c,y:r,w,h});rows=Math.max(rows,r+h);done=true;
         }
+      }
+    }
+  }
+  let holes=0;for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(!get(r,c))holes++;
+  return {out,rows,holes};
+}
+function layoutFan(cols){
+  const R=rng(cols*131+7),opts=tiles.map(t=>sizeOpts(t._w.w/t._w.h,cols));
+  const target=cols<=2?17:12;let best=null,found=0;
+  for(let n=0;n<40000&&found<60;n++){
+    const sizes=opts.map(o=>o[Math.floor(R()*o.length)]);
+    const p=packOnce(sizes,cols);
+    if(p.holes>0)continue;
+    found++;
+    const variety=new Set(sizes.map(s=>s.join('x'))).size;
+    const score=Math.abs(p.rows-target)*3-variety;
+    if(!best||score<best.score)best={score,p};
+  }
+  if(!best){ // fallback: all small, dense flow handles it
+    const p=packOnce(opts.map(o=>o[0]),cols);best={p};
+  }
+  tiles.forEach((t,i)=>{
+    const q=best.p.out[i];
+    t.style.gridColumn=(q.x+1)+' / span '+q.w;t.style.gridRow=(q.y+1)+' / span '+q.h;
+  });
+}
+const MQ_SM=matchMedia('(max-width:767px)');
+function sizeFan(){
+  layoutFan(MQ_SM.matches?2:8);
+  const cols=MQ_SM.matches?2:8;
+  fgrid.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  const g=parseFloat(getComputedStyle(fgrid).columnGap)||14;
+  fgrid.style.setProperty('--fcell',((fgrid.clientWidth-g*(cols-1))/cols)+'px');
+}
 
-        function initTiles() {
-            tiles = [];
-            const cols = Math.ceil(width / (TILE_SIZE + TILE_SPACING)) + 1;
-            const rows = Math.ceil(height / (TILE_SIZE + TILE_SPACING)) + 1;
-            
-            for (let i = 0; i < cols; i++) {
-                for (let j = 0; j < rows; j++) {
-                    tiles.push({
-                        cx: i * (TILE_SIZE + TILE_SPACING) + TILE_SIZE / 2,
-                        cy: j * (TILE_SIZE + TILE_SPACING) + TILE_SIZE / 2,
-                        col: i,
-                        row: j
-                    });
-                }
-            }
-        }
+// profile
+$('#meIcon').src=P.icon||'';
+$('#meName').textContent=P.name||'';
+$('#meBio').innerHTML=L2(esc(P.bio||''),esc(P.bio_en||P.bio||''));
+$('#meX').href=P.x||'#';
+$('#meHandle').textContent=P.handle||'';
 
-        // イベントリスナー
-        window.addEventListener('resize', resize);
-        
-        // マウスの動きに反応（画面全体で検知）
-        window.addEventListener('mousemove', e => { 
-            mouse.x = e.clientX; 
-            mouse.y = e.clientY; 
-            
-            // 一定距離移動するごとにホバー用の波紋を生成
-            let dx = mouse.x - lastMousePos.x;
-            let dy = mouse.y - lastMousePos.y;
-            if (Math.sqrt(dx*dx + dy*dy) > 100) { // 100px移動するごとに波紋（控えめに）
-                ripples.push({
-                    x: mouse.x,
-                    y: mouse.y,
-                    time: performance.now(),
-                    type: 'hover' // ホバー由来の波紋として識別
-                });
-                lastMousePos = { x: mouse.x, y: mouse.y };
-            }
-        });
-        
-        // スマホのタッチ対応
-        window.addEventListener('touchmove', e => {
-            if(e.touches.length > 0) {
-                mouse.x = e.touches[0].clientX;
-                mouse.y = e.touches[0].touches[0].clientY;
-                
-                let dx = mouse.x - lastMousePos.x;
-                let dy = mouse.y - lastMousePos.y;
-                if (Math.sqrt(dx*dx + dy*dy) > 100) {
-                    ripples.push({
-                        x: mouse.x,
-                        y: mouse.y,
-                        time: performance.now(),
-                        type: 'hover'
-                    });
-                    lastMousePos = { x: mouse.x, y: mouse.y };
-                }
-            }
-        });
+// marquee tracks
+$$('.mq-track[data-phrase]').forEach(t=>{const p=t.dataset.phrase;let h='';for(let i=0;i<16;i++)h+=`<span>${p}</span>`;t.innerHTML=h;});
+const GW=['MORIARTY','GAME DEV','3DCG','FAN ART'];
+$$('.mq-track[data-giant]').forEach(t=>{
+  const row=t.dataset.giant;let h='';
+  for(let k=0;k<2;k++)GW.forEach((g,i)=>{const cls=((i+(row==='2'?1:0))%3===1)?'o':((i+(row==='2'?1:0))%3===2?'p':'');h+=`<span class="giant ${cls}">${g}</span><span class="giant p">✦</span>`;});
+  t.innerHTML=h+h; // duplicate for seamless loop
+});
 
-        // プロフィールセクションとWorksカードのホバーで波紋を生成
-        function createHoverRippleFromElement(el) {
-            const rect = el.getBoundingClientRect();
-            ripples.push({
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2,
-                time: performance.now(),
-                type: 'click'
-            });
-        }
+/* =========================================================
+   4. Lenis + ScrollTrigger
+   ========================================================= */
+let lenis=null;
+if(!RM&&window.Lenis){
+  lenis=new Lenis({lerp:.1,smoothWheel:true});
+  lenis.on('scroll',ScrollTrigger.update);
+  gsap.ticker.add(t=>lenis.raf(t*1000));
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop();
+}
+let svel=0;
+if(lenis) lenis.on('scroll',e=>{svel=e.velocity||0;});
 
-        // プロフィールセクション
-        const heroSection = document.querySelector('section.glass-panel.hover\\:-translate-y-1');
-        if (heroSection) {
-            heroSection.addEventListener('mouseenter', () => createHoverRippleFromElement(heroSection));
-        }
+/* =========================================================
+   4b. Area backgrounds: paper cut-out blobs (hero) / wave ribbon (GAMES) / paper cut-outs (FAN ART to the bottom)
+   Only the visible one runs its loop. Reduced motion: one still frame. No WebGL: hero/FAN ART still work (Canvas 2D).
+   ========================================================= */
+const BGDPR=Math.min(window.devicePixelRatio||1,SMALL?1.25:1.5);
+const CREAM=[1,.973,.925];
+const hexRGB=h=>[parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255];
+const mixRGB=(a,b,k)=>[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k];
+const wrapN=(a,n)=>((a%n)+n)%n;
 
-        // Worksカード
-        document.querySelectorAll('.work-card').forEach(card => {
-            card.addEventListener('mouseenter', () => createHoverRippleFromElement(card));
-        });
+/* ---- GAMES: 3 background candidates (1 WebGL canvas, 1-pass fragment shader swapped per candidate) ----
+   試作比較用。採用案が決まったら、切替ボタン(#bgSwitch)・不採用の2本のシェーダー・関連コードを削除する。 */
+const Stage=(function(){
+  const cv=$('#stage');let gl=null;
+  try{gl=cv.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'low-power'});}catch(e){}
+  if(!gl)return null;
+  const NR=8;
+  const VSRC='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const HEAD=`
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes,uPtr,uCen;uniform float uDpr,uT,uRT,uBoost,uRot,uScr,uOn;uniform vec3 uCol,uCol2;uniform vec4 uRip[${NR}];
+const vec3 CR=vec3(1.,.973,.925);
+vec2 PX(){vec2 f=gl_FragCoord.xy/uDpr;return vec2(f.x,uRes.y/uDpr-f.y);}
+`;
+  const FS=[
+/* 1: sunburst */`
+void main(){
+  vec2 p=PX();vec2 sz=uRes/uDpr;
+  vec2 d=p-uCen;float r=length(d)+.001;
+  float a=atan(d.y,d.x);
+  const float N=20.;
+  float f=fract(a/6.2831853*N+uRot);
+  float v=abs(f-.5)*2.;
+  float w=clamp(N/(6.2831853*r)*2.4,.0,.5);
+  float band=smoothstep(.5-w,.5+w,v);
+  vec3 col=mix(mix(CR,uCol2,.07),mix(CR,uCol,.30),band);
+  float far=smoothstep(.15,1.,r/length(sz));
+  col=mix(col,CR,far*.45);
+  col=mix(col,vec3(1.,.99,.96),exp(-r/(min(sz.x,sz.y)*.28))*.75);
+  float rr=0.;
+  for(int i=0;i<${NR};i++){
+    vec4 q=uRip[i];float age=uRT-q.z;
+    if(q.w>0.&&age>0.&&age<1.7){
+      float g=(r-age*max(sz.x,sz.y)*.75)/30.;
+      rr+=exp(-g*g)*q.w*(1.-age/1.7);
+    }
+  }
+  col=mix(col,mix(vec3(1.),uCol,.35),clamp(rr*.75,0.,.8));
+  gl_FragColor=vec4(col,1.);
+}`,
+/* 2: wave ribbons */`
+vec3 bandCol(float k){
+  float t=.08+.26*fract(k*.618+.15);
+  return mix(CR,mix(uCol,uCol2,k/6.),t);
+}
+void main(){
+  vec2 p=PX();vec2 sz=uRes/uDpr;float x=p.x,H=sz.y;
+  vec3 col=bandCol(0.);float prevY=-1e4;
+  for(int i=0;i<6;i++){
+    float fi=float(i);
+    float base=H*(.12+.78*fi/5.);
+    float ph=fi*1.7+uScr*(1.+fi*.12);
+    float y=base+H*.046*sin(x*(.0042+.0007*fi)+uT*(.5+.07*fi)+ph)+H*.022*sin(x*.0093-uT*.65+fi*2.3+uScr*.5);
+    float lx=(x-uPtr.x)/230.,ly=(base-uPtr.y)/300.;
+    float lift=uOn*46.*exp(-lx*lx)*exp(-ly*ly);
+    float bump=0.;
+    for(int j=0;j<${NR};j++){
+      vec4 q=uRip[j];float age=uRT-q.z;
+      if(q.w>0.&&age>0.&&age<2.2)
+      {float bx=(x-(q.x+age*520.))/130.,by=(base-q.y)/320.;
+        bump+=q.w*smoothstep(0.,.3,age)*(1.-age/2.2)*60.*exp(-bx*bx)*exp(-by*by);}
+    }
+    y-=lift+bump;
+    y=max(y,prevY+10.);prevY=y;
+    float m=smoothstep(-1.5,1.5,(p.y-y)/1.3);
+    col=mix(col,bandCol(fi+1.),m);
+  }
+  gl_FragColor=vec4(col,1.);
+}`,
+/* 3: perspective grid floor */`
+void main(){
+  vec2 p=PX();vec2 sz=uRes/uDpr;float H=sz.y;
+  float hy=H*.52;
+  float vx=uCen.x;
+  float R=min(sz.x*.3,H*.22);
+  float pulse=0.;
+  for(int i=0;i<${NR};i++){
+    vec4 q=uRip[i];float age=uRT-q.z;
+    if(q.w>0.&&age>0.&&age<1.6)pulse+=q.w*(1.-age/1.6)*exp(-age*2.);
+  }
+  R*=1.+.05*clamp(pulse,0.,1.5);
+  vec2 sc=vec2(sz.x*.5+(vx-sz.x*.5)*.5,hy-R*.5);
+  vec3 sky=mix(mix(CR,uCol2,.10),mix(CR,uCol,.30),smoothstep(0.,hy,p.y));
+  float ds=length(p-sc)-R;
+  float inside=1.-smoothstep(-1.2,1.2,ds);
+  float t=(p.y-sc.y)/R;
+  float u=(p.y-sc.y)/(R*.17);
+  float wa=1.5/(R*.17);
+  float mk=smoothstep(t*.8-wa,t*.8+wa,fract(u));
+  inside*=mix(1.,mk,smoothstep(0.,.15,t));
+  vec3 sunC=mix(mix(CR,uCol2,.5),mix(CR,uCol,.55),clamp((p.y-(sc.y-R))/(2.*R),0.,1.));
+  sky=mix(sky,vec3(1.,.99,.96),exp(-max(ds,0.)/(R*.7))*.35);
+  vec3 col=mix(sky,sunC,inside);
+  if(p.y>hy-1.5){
+    float dy=max(p.y-hy,.5);
+    vec3 fl=mix(mix(CR,uCol2,.20),mix(CR,uCol,.12),clamp(dy/(H*.5),0.,1.));
+    float k=H*.5;
+    float g=(k/dy)+uT*.45;
+    float dg=abs(fract(g+.5)-.5);
+    float pxH=dg*dy*dy/k;
+    float th=1.+dy*.006;
+    float aH=1.-smoothstep(th-1.,th+1.,pxH);
+    float uu=(p.x-vx)/dy*2.5;
+    float du=abs(fract(uu+.5)-.5);
+    float pxV=du*dy/2.5;
+    float aV=1.-smoothstep(th-1.,th+1.,pxV);
+    float fade=smoothstep(H*.015,H*.12,dy);
+    float rr=0.;
+    for(int i=0;i<${NR};i++){
+      vec4 q=uRip[i];float age=uRT-q.z;
+      if(q.w>0.&&age>0.&&age<1.6){
+        float tdy=H*.5*exp(-age*2.);
+        float e=(dy-tdy)/(H*.05);
+        rr+=exp(-e*e)*q.w*(1.-age/1.6);
+      }
+    }
+    float al=max(aH,aV)*fade*(1.+clamp(rr,0.,1.2));
+    vec3 lc=mix(vec3(1.),uCol,.62+.25*clamp(rr,0.,1.));
+    fl=mix(fl,vec3(1.,.99,.96),clamp(rr*.4,0.,.5));
+    fl=mix(fl,lc,clamp(al,0.,1.)*.85);
+    col=mix(col,fl,smoothstep(-1.,1.,p.y-hy));
+  }
+  float hl=1.-smoothstep(.5,2.2,abs(p.y-hy));
+  col=mix(col,mix(vec3(1.),uCol,.5),hl*.6);
+  gl_FragColor=vec4(col,1.);
+}`];
+  function sh(t,src){const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o;}
+  const NAMES_U=['uRes','uDpr','uT','uRT','uBoost','uRot','uScr','uOn','uPtr','uCen','uCol','uCol2','uRip'];
+  const progs=[];
+  FS.forEach((src,i)=>{
+    try{
+      const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VSRC));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,HEAD+src));
+      gl.bindAttribLocation(pr,0,'p');gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+      const U={};NAMES_U.forEach(n=>{U[n]=gl.getUniformLocation(pr,n);});
+      progs[i]={pr,U};
+    }catch(e){console.error('stage shader '+(i+1)+' compile/link failed:',e.message||e);progs[i]=null;}
+  });
+  if(!progs.some(Boolean))return null;
+  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  const rip=new Float32Array(NR*4);let ri=0;
+  let mode=0,running=false,raf=0,last=0,t=0,rt=0,rot=0,boost=0,lastTint=0,lastRip=0,lx=-999,ly=-999;
+  let on1=0,onT=0;
+  const ptr={x:0,y:0},ptrT={x:0,y:0},cen={x:0,y:0},cenT={x:0,y:0};
+  let col=mixRGB(CREAM,hexRGB(ACC_HEX[0]),.8),col2=col,tgt=col,tgt2=col;
+  function tints(){
+    let best=0,bd=1e9;const mid=innerHeight/2;
+    if(typeof panels!=='undefined')panels.forEach((p,i)=>{const r=p.getBoundingClientRect();const d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=i;}});
+    return [hexRGB(ACC_HEX[best%6]),hexRGB(ACC_HEX[(best+1)%6])];
+  }
+  function resize(){
+    const w=Math.max(2,Math.floor(cv.clientWidth*BGDPR)),h=Math.max(2,Math.floor(cv.clientHeight*BGDPR));
+    if(w!==cv.width||h!==cv.height){cv.width=w;cv.height=h;}
+  }
+  function centreTarget(){
+    const W=cv.clientWidth||innerWidth,H=cv.clientHeight||innerHeight;
+    if(mode===0){cenT.x=W*.5+(ptrT.x-W*.5)*.4;cenT.y=H*.36+(ptrT.y-H*.36)*.4;}
+    else{cenT.x=W*.5+(ptrT.x-W*.5)*.5;cenT.y=H*.5;}
+  }
+  function draw(){
+    const P=progs[mode];
+    gl.viewport(0,0,cv.width,cv.height);
+    if(!P){gl.clearColor(CREAM[0],CREAM[1],CREAM[2],1);gl.clear(gl.COLOR_BUFFER_BIT);return;}
+    const U=P.U;gl.useProgram(P.pr);
+    gl.uniform2f(U.uRes,cv.width,cv.height);gl.uniform1f(U.uDpr,BGDPR);
+    gl.uniform1f(U.uT,t);gl.uniform1f(U.uRT,rt);gl.uniform1f(U.uBoost,boost);gl.uniform1f(U.uRot,rot);
+    gl.uniform1f(U.uScr,(window.scrollY||0)*.0035);gl.uniform1f(U.uOn,on1);
+    gl.uniform2f(U.uPtr,ptr.x,ptr.y);gl.uniform2f(U.uCen,cen.x,cen.y);
+    gl.uniform3f(U.uCol,col[0],col[1],col[2]);gl.uniform3f(U.uCol2,col2[0],col2[1],col2[2]);
+    gl.uniform4fv(U.uRip,rip);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  }
+  function frame(now){
+    if(!running)return;
+    raf=requestAnimationFrame(frame);
+    if(document.hidden){last=now;return;}
+    const dt=Math.min((now-last)/1000,1/20);last=now;
+    boost+=((Math.min(Math.abs(svel)/22,1))-boost)*Math.min(1,dt*5);
+    t+=dt*(1+boost*1.8);rt+=dt;rot+=dt*(.5+boost*1.6);
+    if(now-lastTint>160){lastTint=now;[tgt,tgt2]=tints();}
+    const k=1-Math.exp(-dt*4);col=mixRGB(col,tgt,k);col2=mixRGB(col2,tgt2,k);
+    const kp=1-Math.exp(-dt*(mode===0?1.6:3));
+    ptr.x+=(ptrT.x-ptr.x)*kp;ptr.y+=(ptrT.y-ptr.y)*kp;
+    centreTarget();cen.x+=(cenT.x-cen.x)*kp;cen.y+=(cenT.y-cen.y)*kp;
+    on1+=(onT-on1)*Math.min(1,dt*4);
+    draw();
+  }
+  function ripple(x,y,str){
+    if(!running)return;
+    const o=ri*4;ri=(ri+1)%NR;
+    rip[o]=x;rip[o+1]=y;rip[o+2]=rt;rip[o+3]=str;
+    if(RM)draw();
+  }
+  function snap(){
+    const W=cv.clientWidth||innerWidth,H=cv.clientHeight||innerHeight;
+    if(!ptrT.x){ptrT.x=W*.5;ptrT.y=H*.5;}
+    ptr.x=ptrT.x;ptr.y=ptrT.y;centreTarget();cen.x=cenT.x;cen.y=cenT.y;
+  }
+  function on(b){
+    if(b){
+      if(running)return;running=true;resize();last=performance.now();
+      [col,col2]=tints();tgt=col;tgt2=col2;snap();
+      if(RM){draw();}else raf=requestAnimationFrame(frame);
+    }else{running=false;cancelAnimationFrame(raf);}
+  }
+  let rto;addEventListener('resize',()=>{clearTimeout(rto);rto=setTimeout(()=>{if(running){resize();if(RM)draw();}},150);});
+  cv.addEventListener('webglcontextlost',e=>{e.preventDefault();});
+  return {on,ripple,
+    setMode(m){mode=Math.max(0,Math.min(2,m|0));if(running){snap();if(RM)draw();}},
+    move(x,y){
+      ptrT.x=x;ptrT.y=y;onT=1;
+      const n=performance.now();if(mode!==1&&n-lastRip>130&&Math.hypot(x-lx,y-ly)>34){lastRip=n;lx=x;ly=y;ripple(x,y,.6);}
+    },
+    leave(){onT=0;},
+    down(x,y){ptrT.x=x;ptrT.y=y;ripple(x,y,1.5);}};
+})();
 
-        // クリックで波紋を生成（UI要素の背後でも反応させるためwindowに付与）
-        window.addEventListener('click', e => {
-            ripples.push({ 
-                x: e.clientX, 
-                y: e.clientY, 
-                time: performance.now(),
-                type: 'click' // クリック由来の波紋として識別
-            });
-        });
+/* ---- GAMES の背景はウェーブリボンに確定（比較用の切替ボタンは削除） ---- */
+if(Stage)Stage.setMode(1);
+const BGSW={setActive(){}};
 
-        // 描画ループ
-        function draw(time) {
-            // 背景のクリア
-            ctx.clearRect(0, 0, width, height);
-            
-            // 古い波紋を削除（タイプによって寿命を変える）
-            ripples = ripples.filter(r => {
-                let maxAge = r.type === 'click' ? 2000 : 1000;
-                return time - r.time < maxAge;
-            });
+/* ---- Cut: floating paper cut-out shapes (Canvas 2D). 'hero' = big organic colour blobs + a few shapes / 'fan' = many shapes ---- */
+const Cut=(function(){
+  const cv=$('#cut');const ctx=cv.getContext?cv.getContext('2d',{alpha:false}):null;
+  if(!ctx)return null;
+  const M=110;
+  const PAL=['#ffb3d1','#a8e6ff','#fff0a0','#a9f2cf','#ffd0a0','#cdbcff','#ffc6c6','#c4f0ff'];
+  const TY=['circle','tri','star','plus','zig','wave','semi','ring'];
+  function mk(n,seed,cherry,trash){
+    const Rn=rng(seed),A=[];
+    for(let i=0;i<n;i++){
+      const z=.3+Rn()*.7,ty=TY[i%8];
+      A.push({ty,z,fx:Rn(),fy:Rn(),sz:(26+Rn()*44)*(.55+z*.75),col:PAL[Math.floor(Rn()*PAL.length)],
+        stroke:ty==='zig'||ty==='wave'||ty==='ring'||Rn()<.35,
+        rot:Rn()*6.283,rv:(Rn()-.5)*.55*(.4+z),vx:(Rn()-.5)*16*z,vy:-(4+Rn()*10)*z,ph:Rn()*6.283,wob:6+Rn()*14,
+        ox:0,oy:0,vox:0,voy:0,s:1,vs:0,px:0,py:0});
+    }
+    // さくらんぼ🍒と、ゴミ箱（サイト全体で1個だけの隠し要素）。逆さまにならないよう、回転せずゆらゆら揺れる
+    const sp=(i,ty)=>{const o=A[i%n];o.ty=ty;o.stroke=false;o.sway=true;o.r0=(Rn()-.5)*.5;o.z=Math.max(o.z,.62);o.sz=Math.max(o.sz,44)*1.2;};
+    for(let j=0;j<(cherry||0);j++)sp(2+j*Math.max(1,Math.floor(n/(cherry||1))),'cherry');
+    if(trash)sp(5,'trash');
+    return A.sort((a,b)=>a.z-b.z);
+  }
+  const S=mk(SMALL?18:40,20261,SMALL?3:6,1);   // FAN ART..bottom（ゴミ箱はここに1個だけ）
+  const HS=mk(SMALL?8:14,7741,SMALL?1:2,0);    // hero (few)
+  // hero blobs: big flat organic colour fields near the edges (fx,fy = fraction of viewport, r = fraction of sqrt(W*H))
+  const Rb=rng(5150);
+  const BL=(SMALL?[
+    {fx:.98,fy:.05,r:.30,c:'#ffc9dc'},
+    {fx:.00,fy:.60,r:.26,c:'#bfe9ff'},
+    {fx:.90,fy:.98,r:.32,c:'#fff0a6'}
+  ]:[
+    {fx:.97,fy:.04,r:.34,c:'#ffc9dc'},
+    {fx:.03,fy:.98,r:.32,c:'#bfe9ff'},
+    {fx:.99,fy:.62,r:.24,c:'#b9f3d8'},
+    {fx:.52,fy:1.05,r:.24,c:'#fff0a6'},
+    {fx:.64,fy:-.07,r:.19,c:'#d9ccff'}
+  ]).map(d=>{
+    const n=9,base=[],per=[],ph=[];
+    for(let i=0;i<n;i++){base.push(.86+Rb()*.26);per.push(8+Rb()*6);ph.push(Rb()*6.283);}
+    const c=hexRGB(d.c);
+    return {fx:d.fx,fy:d.fy,r:d.r,n,base,per,ph,amp:.05+Rb()*.04,a0:Rb()*6.283,z:.6+Rb()*.7,
+      col:c.slice(),tg:c.slice(),e:RM?1:0,ox:0,oy:0,hx:0,hy:0};
+  });
+  let introStarted=false;
+  if(!RM)setTimeout(()=>{if(!introStarted)BL.forEach(b=>{b.e=1;});},5000);
+  const P=[]; // click-burst particles
+  const D=[]; // pop discs
+  let W=0,H=0,running=false,raf=0,last=0,T=0,k=0,kt=0;
+  const ptr={x:-9999,y:-9999,on:false};
+  function resize(){
+    const w=Math.max(2,cv.clientWidth),h=Math.max(2,cv.clientHeight);
+    const pw=Math.floor(w*BGDPR),ph=Math.floor(h*BGDPR);
+    if(pw!==cv.width||ph!==cv.height){cv.width=pw;cv.height=ph;}
+    W=w;H=h;
+  }
+  function path(ty,sz,stroke){
+    const r=sz/2;ctx.beginPath();
+    if(ty==='circle')ctx.arc(0,0,r,0,6.2832);
+    else if(ty==='ring')ctx.arc(0,0,r*.8,0,6.2832);
+    else if(ty==='tri'){ctx.moveTo(0,-r*1.05);ctx.lineTo(r*1.0,r*.78);ctx.lineTo(-r*1.0,r*.78);ctx.closePath();}
+    else if(ty==='star'){for(let i=0;i<10;i++){const a=-1.5708+i*.62832,q=i%2?r*.46:r*1.1;ctx[i?'lineTo':'moveTo'](Math.cos(a)*q,Math.sin(a)*q);}ctx.closePath();}
+    else if(ty==='plus'){const a=r*.36,b=r*1.0;ctx.moveTo(-a,-b);ctx.lineTo(a,-b);ctx.lineTo(a,-a);ctx.lineTo(b,-a);ctx.lineTo(b,a);ctx.lineTo(a,a);ctx.lineTo(a,b);ctx.lineTo(-a,b);ctx.lineTo(-a,a);ctx.lineTo(-b,a);ctx.lineTo(-b,-a);ctx.lineTo(-a,-a);ctx.closePath();}
+    else if(ty==='zig'){const n=5,w=sz*1.3,h=sz*.28;for(let i=0;i<=n;i++){const x=-w/2+w*i/n,y=(i%2?h:-h);ctx[i?'lineTo':'moveTo'](x,y);}}
+    else if(ty==='wave'){const w=sz*1.3,h=sz*.22;ctx.moveTo(-w/2,0);for(let i=0;i<3;i++){const x0=-w/2+w*i/3,x1=-w/2+w*(i+1)/3;ctx.quadraticCurveTo((x0+x1)/2,i%2?h*2:-h*2,x1,0);}}
+    else if(ty==='semi'){ctx.arc(0,r*.3,r,3.1416,6.2832);ctx.closePath();}
+  }
+  function drawCherry(sz){
+    const FR='#ff8fb0',GR='#7fdcae',r=sz*.27,jx=sz*.1,jy=-sz*.44,ax=-sz*.22,ay=sz*.22,bx=sz*.26,by=sz*.3;
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=GR;ctx.lineWidth=sz*.075;
+    ctx.beginPath();ctx.moveTo(ax,ay-r*.8);ctx.quadraticCurveTo(ax+sz*.04,jy+sz*.18,jx,jy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx,by-r*.8);ctx.quadraticCurveTo(bx+sz*.02,jy+sz*.2,jx,jy);ctx.stroke();
+    ctx.fillStyle=GR;ctx.beginPath();ctx.moveTo(jx,jy);ctx.quadraticCurveTo(jx+sz*.2,jy-sz*.2,jx+sz*.42,jy-sz*.02);ctx.quadraticCurveTo(jx+sz*.2,jy+sz*.12,jx,jy);ctx.fill();
+    ctx.fillStyle=FR;ctx.beginPath();ctx.arc(ax,ay,r,0,6.2832);ctx.fill();ctx.beginPath();ctx.arc(bx,by,r,0,6.2832);ctx.fill();
+    ctx.fillStyle='#fff8ec';ctx.beginPath();ctx.arc(ax-r*.35,ay-r*.35,r*.2,0,6.2832);ctx.fill();ctx.beginPath();ctx.arc(bx-r*.35,by-r*.35,r*.2,0,6.2832);ctx.fill();
+  }
+  function drawTrash(sz){
+    const C='#b9c7ee',t=-sz*.2,b=sz*.48,wt=sz*.36,wb=sz*.28;
+    ctx.lineJoin='round';ctx.lineCap='round';ctx.fillStyle=C;ctx.strokeStyle=C;ctx.lineWidth=sz*.08;
+    ctx.beginPath();ctx.moveTo(-wt,t);ctx.lineTo(wt,t);ctx.lineTo(wb,b);ctx.lineTo(-wb,b);ctx.closePath();ctx.fill();ctx.stroke();   // 本体
+    ctx.beginPath();ctx.moveTo(-sz*.46,t-sz*.12);ctx.lineTo(sz*.46,t-sz*.12);ctx.lineWidth=sz*.13;ctx.stroke();                    // ふた
+    ctx.beginPath();ctx.moveTo(-sz*.13,t-sz*.26);ctx.lineTo(sz*.13,t-sz*.26);ctx.lineWidth=sz*.1;ctx.stroke();                     // 取っ手
+    ctx.strokeStyle='#fff8ec';ctx.lineWidth=sz*.06;                                                                                // 縦の溝
+    for(const x of [-.16,0,.16]){ctx.beginPath();ctx.moveTo(sz*x,t+sz*.1);ctx.lineTo(sz*x*.85,b-sz*.1);ctx.stroke();}
+  }
+  function drawShape(ty,sz,stroke,col,lw){
+    if(ty==='cherry'){drawCherry(sz);return;}
+    if(ty==='trash'){drawTrash(sz);return;}
+    path(ty,sz,stroke);
+    ctx.lineJoin='round';ctx.lineCap='round';
+    if(stroke||ty==='zig'||ty==='wave'||ty==='ring'){ctx.strokeStyle=col;ctx.lineWidth=ty==='ring'?sz*.2:lw;ctx.stroke();}
+    else{ctx.fillStyle=col;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=sz*.1;ctx.stroke();}
+  }
+  const rgbs=c=>'rgb('+Math.round(c[0]*255)+','+Math.round(c[1]*255)+','+Math.round(c[2]*255)+')';
+  function stepSet(A,dt,sy,PW,PH){
+    for(const s of A){
+      const bx=wrapN(s.fx*PW+s.vx*T,PW)-M+Math.sin(T*.5+s.ph)*s.wob;
+      const by=wrapN(s.fy*PH+s.vy*T-sy*(.1+.42*s.z),PH)-M+Math.cos(T*.4+s.ph)*s.wob*.6;
+      let px=bx+s.ox,py=by+s.oy;
+      if(ptr.on){
+        const dx=px-ptr.x,dy=py-ptr.y,d=Math.hypot(dx,dy),R=120+s.sz*.45;
+        if(d<R&&d>.01){const f=(1-d/R)*2600*dt*(.5+s.z*.6);s.vox+=dx/d*f;s.voy+=dy/d*f;}
+      }
+      s.vox+=(-120*s.ox-8*s.vox)*dt;s.ox+=s.vox*dt;
+      s.voy+=(-120*s.oy-8*s.voy)*dt;s.oy+=s.voy*dt;
+      s.vs+=(-200*(s.s-1)-9*s.vs)*dt;s.s+=s.vs*dt;
+      if(s.sway)s.rot=s.r0+Math.sin(T*.7+s.ph)*.22;else s.rot+=s.rv*dt;
+      s.px=bx+s.ox;s.py=by+s.oy;
+    }
+  }
+  function step(dt){
+    T+=dt;const sy=window.scrollY||0,PW=W+2*M,PH=H+2*M;
+    if(RM)k=kt;else{k+=(kt-k)*Math.min(1,dt*6);if(Math.abs(kt-k)<.02)k=kt;}
+    stepSet(S,dt,sy,PW,PH);stepSet(HS,dt,sy,PW,PH);
+    const u=Math.sqrt(W*H),lk=1-Math.exp(-4*dt),pk=1-Math.exp(-3*dt),tx=ptr.on?ptr.x/W-.5:0,ty=ptr.on?ptr.y/H-.5:0;
+    for(const b of BL){
+      b.hx=b.fx*W+Math.sin(T*.23+b.a0)*u*.012;b.hy=b.fy*H+Math.cos(T*.19+b.a0)*u*.012;
+      b.ox+=(-tx*34*b.z-b.ox)*pk;b.oy+=(-ty*34*b.z-b.oy)*pk;
+      for(let i=0;i<3;i++)b.col[i]+=(b.tg[i]-b.col[i])*lk;
+    }
+    for(let i=D.length-1;i>=0;i--){D[i].t+=dt;if(D[i].t>=D[i].dur)D.splice(i,1);}
+    for(let i=P.length-1;i>=0;i--){
+      const q=P[i];q.life-=dt;if(q.life<=0){P.splice(i,1);continue;}
+      const dr=Math.exp(-2.4*dt);q.vx*=dr;q.vy*=dr;q.x+=q.vx*dt;q.y+=q.vy*dt;q.rot+=q.rv*dt;
+    }
+  }
+  // smooth closed blob: n control points joined through their midpoints (no corners)
+  function blobPath(b,u){
+    const e=Math.max(b.e,0),R=b.r*u*e,cx=W*.5+(b.hx+b.ox-W*.5)*e,cy=H*.5+(b.hy+b.oy-H*.5)*e,n=b.n,pts=[];
+    for(let i=0;i<n;i++){
+      const a=b.a0+i/n*6.2832,rho=R*(b.base[i]+b.amp*Math.sin(T*6.2832/b.per[i]+b.ph[i]));
+      pts.push([cx+Math.cos(a)*rho,cy+Math.sin(a)*rho]);
+    }
+    ctx.beginPath();
+    const mx=(a,c)=>(a+c)/2;
+    ctx.moveTo(mx(pts[n-1][0],pts[0][0]),mx(pts[n-1][1],pts[0][1]));
+    for(let i=0;i<n;i++){const p=pts[i],q=pts[(i+1)%n];ctx.quadraticCurveTo(p[0],p[1],mx(p[0],q[0]),mx(p[1],q[1]));}
+    ctx.closePath();
+  }
+  function drawSet(A,m){
+    for(const s of A){
+      ctx.save();ctx.translate(s.px,s.py);ctx.rotate(s.rot);ctx.scale(s.s,s.s);
+      ctx.globalAlpha=(.4+.42*s.z)*m;
+      drawShape(s.ty,s.sz,s.stroke,s.col,3+s.z*4);
+      ctx.restore();
+    }
+  }
+  function draw(){
+    ctx.setTransform(BGDPR,0,0,BGDPR,0,0);
+    ctx.fillStyle='#fff8ec';ctx.fillRect(0,0,W,H);
+    if(k<.999){
+      const m=1-k,u=Math.sqrt(W*H);
+      ctx.globalAlpha=m;ctx.lineJoin='round';
+      for(const b of BL){
+        if(b.e<=.001)continue;
+        blobPath(b,u);const c=rgbs(b.col);ctx.fillStyle=c;ctx.fill();ctx.strokeStyle=c;ctx.lineWidth=2;ctx.stroke();
+      }
+      drawSet(HS,m);
+      for(const d of D){
+        const p=d.t/d.dur,ez=1-Math.pow(1-p,3),r=d.r*ez;
+        ctx.globalAlpha=m*Math.pow(1-p,1.4)*.9;
+        ctx.beginPath();ctx.arc(d.x,d.y,r,0,6.2832);
+        ctx.fillStyle=rgbs(d.col);ctx.fill();
+        ctx.strokeStyle=rgbs(d.edge);ctx.lineWidth=Math.max(1.5,11*(1-p));ctx.stroke();
+      }
+    }
+    if(k>.001)drawSet(S,k);
+    for(const q of P){
+      ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot);
+      ctx.globalAlpha=Math.min(1,q.life/q.max*1.6)*.9;
+      drawShape(q.ty,q.sz,q.stroke,q.col,3);
+      ctx.restore();
+    }
+    ctx.globalAlpha=1;
+  }
+  function frame(now){
+    if(!running)return;
+    raf=requestAnimationFrame(frame);
+    if(document.hidden){last=now;return;}
+    const dt=Math.min((now-last)/1000,1/20);last=now;
+    step(dt);draw();
+  }
+  function on(b){
+    if(b){
+      if(running)return;running=true;resize();last=performance.now();
+      if(RM){step(0);draw();}else raf=requestAnimationFrame(frame);
+    }else{running=false;cancelAnimationFrame(raf);}
+  }
+  let rto;addEventListener('resize',()=>{clearTimeout(rto);rto=setTimeout(()=>{if(running){resize();if(RM){step(0);draw();}}},150);});
+  return {on,
+    isOn(){return running;},
+    setMode(m,snap){kt=m==='fan'?1:0;if(snap||RM)k=kt;if(RM&&running){step(0);draw();}},
+    move(x,y){ptr.x=x;ptr.y=y;ptr.on=true;},
+    leave(){ptr.on=false;},
+    // intro: blobs fly out of the centre one after another
+    heroIn(){
+      introStarted=true;
+      BL.forEach((b,i)=>{gsap.killTweensOf(b);b.e=0;gsap.to(b,{e:1,duration:.95,ease:'back.out(1.9)',delay:i*.13});});
+    },
+    // flat disc that pops and fades (hero)
+    disc(x,y,hex){
+      if(!running||RM)return;
+      const c=mixRGB(hexRGB(hex),CREAM,.45),ed=mixRGB(hexRGB(hex),CREAM,.15);
+      if(D.length>10)D.shift();
+      D.push({x,y,t:0,dur:.55+Math.random()*.15,r:(SMALL?60:80)+Math.random()*40,col:c,edge:ed});
+    },
+    // nearest blob glides to the (pale) accent colour
+    tint(x,y,hex){
+      let best=null,bd=1e9;
+      for(const b of BL){const d=Math.hypot(b.hx-x,b.hy-y);if(d<bd){bd=d;best=b;}}
+      if(best)best.tg=mixRGB(hexRGB(hex),CREAM,.5);
+    },
+    pop(cx,cy,rad){
+      if(!running||RM)return;
+      for(const A of [S,HS])for(const s of A){
+        const dx=s.px-cx,dy=s.py-cy,d=Math.hypot(dx,dy)||1,R=rad+300;
+        if(d<R){const f=1-d/R;s.vox+=dx/d*520*f*(.4+s.z);s.voy+=dy/d*520*f*(.4+s.z);s.vs+=7*f;}
+      }
+    },
+    burst(x,y,n,off){
+      if(!running||RM)return;
+      const BT=['circle','tri','star','plus','semi'],cnt=n||9;
+      for(let i=0;i<cnt;i++){
+        const a=i/cnt*6.2832+Math.random()*.6,v=220+Math.random()*220;
+        if(P.length>70)P.shift();
+        P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,rot:Math.random()*6,rv:(Math.random()-.5)*9,life:1.1,max:1.1,
+          sz:12+Math.random()*14,ty:BT[i%5],col:PAL[off==null?Math.floor(Math.random()*PAL.length):wrapN((off|0)+i,PAL.length)],stroke:Math.random()<.3});
+      }
+    }};
+})();
 
-            tiles.forEach(tile => {
-                // 1. 時間による色の変化用の波（サイズには影響させない）
-                let colorWave = Math.sin(tile.col * 0.1 + tile.row * 0.1 + time * 0.001);
+/* ---- background manager: cross-fades by which section sits at screen centre ---- */
+const BG=(function(){
+  const els={hero:$('#cut'),stage:$('#stage'),cut:$('#cut')};
+  const impl={hero:Cut,stage:Stage,cut:Cut};
+  let cur='hero',tm=0;
+  if(Cut){Cut.setMode('hero',true);Cut.on(true);els.hero.style.opacity=1;}
+  function settle(){
+    for(const k in els){
+      if(k===cur||els[k]===els[cur])continue;
+      els[k].style.transition='none';els[k].style.opacity=0;els[k].style.zIndex=0;
+      if(impl[k])impl[k].on(false);
+    }
+  }
+  function show(name){
+    if(name===cur)return;
+    const old=cur;cur=name;
+    if(els[old]===els[cur]){ if(Cut)Cut.setMode(cur==='cut'?'fan':'hero'); return; } // hero <-> FAN ART share the canvas
+    for(const k in els){
+      if(k===cur||k===old||els[k]===els[cur]||els[k]===els[old])continue;
+      els[k].style.zIndex=0;
+    }
+    if(impl[old]){const e=els[old];e.style.opacity=getComputedStyle(e).opacity;e.style.transition='none';e.style.zIndex=1;}
+    if(impl[cur]){
+      const e=els[cur];if(cur!=='stage')Cut.setMode(cur==='cut'?'fan':'hero',!Cut.isOn());impl[cur].on(true);
+      e.style.transition='none';e.style.zIndex=2;e.style.opacity=0;void e.offsetWidth;
+      e.style.transition='opacity .5s ease';e.style.opacity=1;
+    }
+    clearTimeout(tm);tm=setTimeout(settle,600);
+    BGSW.setActive(cur==='stage');
+  }
+  function pickArea(){
+    const mid=innerHeight/2;
+    const gh=$('#gamesHead').getBoundingClientRect(),fh=$('#fanHead').getBoundingClientRect();
+    if(fh.top<=mid)return 'cut';
+    if(gh.top<=mid)return 'stage';
+    return 'hero';
+  }
+  let acc=0;
+  gsap.ticker.add((time,dtms)=>{acc+=dtms;if(acc<90)return;acc=0;show(pickArea());});
+  if(!RM){
+    addEventListener('pointermove',e=>{
+      if(e.pointerType==='touch')return;
+      const i=impl[cur];if(i&&i.move)i.move(e.clientX,e.clientY);
+    },{passive:true});
+    document.documentElement.addEventListener('pointerleave',()=>{if(Cut)Cut.leave();if(Stage)Stage.leave();});
+    addEventListener('pointerdown',e=>{
+      const i=impl[cur];if(i&&i.down)i.down(e.clientX,e.clientY);
+      if((cur==='cut'||cur==='hero')&&Cut){Cut.burst(e.clientX,e.clientY,cur==='hero'?5:9);if(cur==='hero')Cut.disc(e.clientX,e.clientY,ACC_HEX[Math.floor(Math.random()*6)]);}
+    },{passive:true});
+  }
+  BGREF={area:()=>cur};
+  return {
+    show,
+    area:()=>cur,
+    panelHover(x,y){if(cur==='stage'&&Stage)Stage.ripple(x,y,1.25);},
+    tileHover(t){
+      if(cur!=='cut'||!Cut)return;
+      const r=t.getBoundingClientRect();Cut.pop(r.left+r.width/2,r.top+r.height/2,Math.max(r.width,r.height)*.6);
+    }
+  };
+})();
 
-                // 2. マウス移動とクリックによる波紋の影響
-                let rippleEffect = 0;
-                let hueShift = 0; // 波紋による色の変化
-                
-                ripples.forEach(r => {
-                    let rdx = tile.cx - r.x;
-                    let rdy = tile.cy - r.y;
-                    let rdist = Math.sqrt(rdx*rdx + rdy*rdy);
-                    let age = time - r.time;
-                    
-                    let maxAge, speed, thickness, intensity;
-                    
-                    if (r.type === 'click') {
-                        maxAge = 2000;    // 消えるまでの時間（少し短く）
-                        speed = 0.6;      // 波の速さ（ゆったり）
-                        thickness = 80;   // 波の太さ
-                        intensity = 0.8;  // 波の高さ（控えめに）
-                    } else { // 'hover'
-                        maxAge = 1000;    // すぐ消える
-                        speed = 0.4;
-                        thickness = 50;
-                        intensity = 0.4;  // ふんわり程度
-                    }
-                    
-                    // 波の広がる半径
-                    let radius = age * speed; 
-                    let distanceToRing = Math.abs(rdist - radius);
-                    
-                    // リングの太さ（影響範囲）
-                    if (distanceToRing < thickness) {
-                        let force = Math.cos((distanceToRing / thickness) * (Math.PI / 2)); 
-                        let effect = force * (1 - age / maxAge) * intensity;
-                        rippleEffect += effect;
-                        
-                        // 波紋が強いほど色相も変化させる
-                        hueShift += effect * (r.type === 'click' ? 40 : 20);
-                    }
-                });
+/* =========================================================
+   5. Marquee helper
+   ========================================================= */
+function marquee(el,speed,dir,reactive){
+  const track=el.querySelector('.mq-track');let p=0,w=0,vis=true;
+  const measure=()=>{w=track.scrollWidth/2;};
+  measure();addEventListener('resize',measure);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);addEventListener('load',measure);
+  new IntersectionObserver(e=>{vis=e[0].isIntersecting;}).observe(el);
+  if(RM)return;
+  gsap.ticker.add((time,dtms)=>{
+    if(!vis||!w)return;
+    const v=dir*(speed+(reactive?Math.min(Math.abs(svel)*14,900):0));
+    p+=v*dtms/1000;p=((p%w)+w)%w;
+    track.style.transform=`translate3d(${-p}px,0,0)`;
+  });
+}
+marquee($('.bands:not(.bands-top) .band-a'),140,1,false);
+marquee($('.bands:not(.bands-top) .band-b'),120,-1,false);
+marquee($('.bands-top .band-a'),120,-1,false);
+marquee($('.bands-top .band-b'),140,1,false);
+marquee($('#mq1'),110,1,true);
+marquee($('#mq2'),90,-1,true);
 
-                // スケール（サイズ）の合成
-                // 基本の大きさ(1.0) + 波紋影響
-                let scale = 1.0 + rippleEffect;
-                // サイズが極端になりすぎないように制限
-                scale = Math.max(0.1, Math.min(3.5, scale)); 
-                
-                let currentRadius = (TILE_SIZE / 2) * scale;
-                
-                // 色の計算（時間経過と波紋によるグラデーション）
-                let hue = (220 + colorWave * 30 + time * 0.01 + hueShift) % 360;
-                
-                // 普段は薄く、触った時だけふわっと浮き出る
-                let alpha = Math.min(0.6, 0.08 + scale * 0.12);
-                let saturation = Math.min(90, 50 + scale * 10);
-                
-                ctx.fillStyle = `hsla(${hue}, ${saturation}%, 65%, ${alpha})`;
-                
-                // 円（ドット）の描画
-                ctx.beginPath();
-                ctx.arc(tile.cx, tile.cy, currentRadius, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            
-            requestAnimationFrame(draw);
-        }
+/* =========================================================
+   6. Intro
+   ========================================================= */
+const hero=$('#hero'),intro=$('#intro');
+let afterDone=false;
+function afterIntro(){ if(afterDone)return;afterDone=true;if(MINI)MINI.start(); }
+function unlock(){ afterIntro(); if(lenis)lenis.start(); document.documentElement.classList.remove('locked'); intro.style.display='none'; ScrollTrigger.refresh(); }
 
-        // 初期化とアニメーション開始
-        resize();
-        requestAnimationFrame(draw);
+function buildIntro(){
+  intro.innerHTML='';
+  const bars=document.createElement('div');bars.className='bars';
+  for(let i=0;i<8;i++){const b=document.createElement('div');b.className='bar';b.style.background=ACC_HEX[i%6==2?0:i%6]; bars.appendChild(b);}
+  intro.appendChild(bars);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('class','blob');svg.setAttribute('viewBox','-160 -160 320 320');
+  svg.innerHTML=`<path d="${splashPath(0,0,105,20,3,7)}" fill="#ff5c9e" stroke="${NAVY}" stroke-width="7" stroke-linejoin="round"/>
+   <path d="${splashPath(0,0,62,14,11,0)}" fill="#ffe03a" stroke="${NAVY}" stroke-width="6" stroke-linejoin="round"/>
+   <path d="${splashPath(0,0,30,10,5,0)}" fill="#21cdff" stroke="${NAVY}" stroke-width="5" stroke-linejoin="round"/>`;
+  svg.style.display='none';   // 最初のマークは出さない（専用のモチーフが決まったら差し替える）
+  intro.appendChild(svg);
+  gsap.set(bars,{rotation:-18});
+  return {bars:$$('.bar',bars),blob:svg};
+}
 
-    </script>
+function showHeroStatic(){
+  gsap.set(['.hero .ch','.hero .t-icon','.hero .t-en','.hero .t-role','.hero .chip','.hero .band','.hero .deco','.hero .screen'],{opacity:1,clearProps:'transform'});
+  intro.style.display='none';
+}
+
+function runIntro(){
+  if(RM){showHeroStatic();return;}
+  document.documentElement.classList.add('locked');
+  const {bars,blob}=buildIntro();
+  const chars=$$('.hero .ch'),bands=$$('.hero .band'),decos=$$('.hero .deco');
+  gsap.set(chars,{opacity:1,yPercent:140,scale:.3,rotation:()=>gsap.utils.random(-30,30)});
+  gsap.set(bands,{opacity:1,clipPath:'inset(0 100% 0 0)'});
+  gsap.set(decos,{opacity:0,scale:0});
+  const scrEl=$('#screen');gsap.set(scrEl,{opacity:0,scale:.55,y:70,transformOrigin:'50% 50%'});
+  const tIcon=$('.hero .t-icon'),tEn=$('.hero .t-en');
+  if(tIcon)gsap.set(tIcon,{opacity:1,scale:0,rotation:-50});
+  if(tEn)gsap.set(tEn,{opacity:0,y:10});
+  const tRole=$('.hero .t-role');if(tRole)gsap.set(tRole,{opacity:1,scale:0,rotation:-24});
+  gsap.set(bars,{xPercent:-110});gsap.set(blob,{scale:0,transformOrigin:'50% 50%'});
+  const tl=gsap.timeline({delay:.2,onComplete:()=>{unlock();idleWobble();}});
+  tl.to(blob,{scale:1,rotation:12,duration:.75,ease:'elastic.out(1,.5)'},.05)
+    .to(bars,{xPercent:0,duration:.4,ease:'power3.inOut',stagger:.045},.85)
+    .set(blob,{autoAlpha:0},1.4)
+    .call(()=>{if(Cut)Cut.heroIn();},null,1.5)
+    .to(bars,{xPercent:112,duration:.42,ease:'power3.inOut',stagger:.045},1.55)
+    .to(chars,{yPercent:0,scale:1,rotation:0,duration:.8,ease:'back.out(2.3)',stagger:.075},1.85)
+    .to(tIcon||{},{scale:1,rotation:0,duration:.75,ease:'back.out(2.8)'},1.8)
+    .to(tEn||{},{opacity:1,y:0,duration:.5,ease:'power3.out'},2.5)
+    .to(tRole||{},{scale:1,rotation:SMALL?-5:-3,duration:.6,ease:'back.out(3)'},2.45)
+    .to(bands,{clipPath:'inset(0 0% 0 0)',duration:.7,ease:'power4.out',stagger:.12},2.35)
+    .to(scrEl,{opacity:1,scale:1,y:0,duration:.85,ease:'back.out(1.7)'},2.2)
+    .to(decos,{opacity:1,scale:1,rotation:()=>gsap.utils.random(-25,25),duration:.6,ease:'back.out(3)',stagger:.08},2.55);
+  tl.seek(.7);   // マークが出ていた冒頭の時間を飛ばし、色帯のワイプから始める
+  // safety: never leave the page locked
+  setTimeout(()=>{ if(document.documentElement.classList.contains('locked')) unlock(); },7000);
+}
+function idleWobble(){
+  if(RM)return;
+  $$('.hero .ch').forEach((c,i)=>gsap.to(c,{rotation:i%2?3:-3,yPercent:i%2?-3:3,duration:1.4+i*.12,ease:'sine.inOut',yoyo:true,repeat:-1,delay:i*.1}));
+  const ti=$('.hero .t-icon');if(ti)gsap.to(ti,{rotation:7,duration:1.6,ease:'sine.inOut',yoyo:true,repeat:-1});
+  $$('.hero .deco').forEach((d,i)=>gsap.to(d,{y:i%2?-14:14,rotation:'+=40',duration:2.2+i*.3,ease:'sine.inOut',yoyo:true,repeat:-1}));
+}
+
+/* =========================================================
+   7. Hero mini-reel (time-driven, not scroll-driven)
+   ========================================================= */
+let MINI=null;
+function buildMini(){
+  const scr=$('#screen'),frame=$('#scrFrame'),numEl=$('#scrNum'),ttlEl=$('#scrTtl');
+  if(!featured.length){scr.style.display='none';return;}
+  const pad=n=>String(n).padStart(2,'0');
+  const S=featured.map(w=>{
+    const d=document.createElement('div');d.className='scr-s';
+    d.innerHTML=w.video?`<video class="m" muted loop playsinline preload="none" poster="${esc(w.thumb)}" src="${esc(w.video)}"></video>`:`<img class="m" src="${esc(w.thumb)}" alt="" decoding="async">`;
+    frame.appendChild(d);return d;
+  });
+  const lnHTML=i=>lnBoth(featured[i]);
+  // ラベルを番号と重ならない幅（スクリーンの56%）に収める: まず縮小（下限70%）、だめなら2行
+  function fitTtl(){
+    ttlEl.classList.remove('wrap');ttlEl.style.setProperty('--ts','1');
+    const f=parseFloat(getComputedStyle(scr).getPropertyValue('--ttlw'))||.56;
+    const avail=scr.clientWidth*f-26;let w=0;
+    $$('.ln>span',ttlEl).forEach(s=>{if(s.offsetParent!==null)w=Math.max(w,s.offsetWidth);});
+    if(!w||avail<=0)return;
+    let k=Math.min(1,avail/w);
+    if(k<.7){ttlEl.classList.add('wrap');k=Math.max(.7,Math.min(1,avail/(w/2*1.2)));}
+    ttlEl.style.setProperty('--ts',k.toFixed(3));
+  }
+  window.fitScrTitle=fitTtl;
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitTtl);
+  {let ft;addEventListener('resize',()=>{clearTimeout(ft);ft=setTimeout(fitTtl,120);});}
+  let cur=0,busy=false,tcount=0,heroVis=true,started=false,timer=null;
+  scr.style.setProperty('--ac',ACC[0]);numEl.textContent=pad(1);ttlEl.innerHTML=lnHTML(0);fitTtl();
+  const panelOf=i=>panels[GAMES.indexOf(featured[i])]||panels[0];
+  scr.addEventListener('click',e=>{
+    e.preventDefault();const p=panelOf(cur);if(!p)return;
+    if(lenis)lenis.scrollTo(p,{offset:-24,duration:1.4});else p.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});
+  });
+  function vids(){S.forEach((s,i)=>{const v=$('video',s);if(!v)return;if(heroVis&&started&&(i===cur||(busy&&s.style.visibility==='visible')))v.play().catch(()=>{});else v.pause();});}
+  new IntersectionObserver(e=>{heroVis=e[0].isIntersecting;vids();},{threshold:.1}).observe(hero);
+  function go(next){
+    if(busy||next===cur||RM)return;busy=true;
+    const from=S[cur],to=S[next],name=TRN[tcount++%5],t=TR[name];
+    gsap.set(to,{visibility:'visible',zIndex:2});gsap.set(from,{zIndex:1});
+    t.init(to);
+    const nv=$('video',to);if(nv&&heroVis)nv.play().catch(()=>{});
+    const tl=gsap.timeline({onComplete:()=>{
+      gsap.set(from,{visibility:'hidden'});gsap.set(to,{zIndex:1});clearFx(to);
+      const pv=$('video',from);if(pv)pv.pause();
+      cur=next;busy=false;
+    }});
+    tl.add(t.play(to,t.d),0);
+    tl.to(numEl,{yPercent:-125,rotation:7,duration:.26,ease:'power3.in'},0)
+      .call(()=>{numEl.textContent=pad(next+1);scr.style.setProperty('--ac',ACC[next%6]);},null,.3)
+      .fromTo(numEl,{yPercent:125,rotation:-7},{yPercent:0,rotation:0,duration:.55,ease:'back.out(2)'},.3);
+    tl.to($$('.ln>span',ttlEl),{yPercent:-135,duration:.22,ease:'power3.in',stagger:.04},0)
+      .call(()=>{
+        ttlEl.innerHTML=lnHTML(next);fitTtl();const sp=$$('.ln>span',ttlEl);
+        gsap.set(sp,{yPercent:135});gsap.to(sp,{yPercent:0,duration:.6,ease:'power4.out',stagger:.08,delay:.04});
+      },null,.3);
+    const r=scr.getBoundingClientRect();
+    FX.splash(Math.max(.04,r.left/innerWidth),(r.top+r.height*.5)/innerHeight,next,1700,.8);
+    FX.splash(Math.min(.96,r.right/innerWidth),(r.top+r.height*.4)/innerHeight,next+1,1700,.8);
+    FX.burst(Math.min(.95,Math.max(.05,(r.left+r.width*.5)/innerWidth)),1-(r.top+r.height*.5)/innerHeight,3,600,.8,next);
+    FX.tint((r.left+r.width*.5)/innerWidth,(r.top+r.height*.5)/innerHeight,next);
+  }
+  function schedule(){
+    timer=gsap.delayedCall(3.2,()=>{
+      if(heroVis&&!document.hidden&&!busy)go((cur+1)%S.length);
+      schedule();
+    });
+  }
+  MINI={start(){
+    if(RM||started||S.length<2)return;started=true;
+    featured.forEach(w=>{const i=new Image();i.src=w.thumb;});
+    vids();schedule();
+  }};
+}
+
+/* =========================================================
+   7b. Springy 3D tilt / glare / parallax (shared by panels + fan prints)
+   ========================================================= */
+const TK=['rot','rx','ry','s','ix','iy'];
+const tiltSet=new Set();
+function applyTilt(it){
+  const v=it.v;
+  it.el.style.transform=`rotate(${v.rot.toFixed(3)}deg) perspective(900px) rotateX(${v.rx.toFixed(3)}deg) rotateY(${v.ry.toFixed(3)}deg) scale(${v.s.toFixed(4)})`;
+  it.el.style.setProperty('--ix',v.ix.toFixed(2)+'px');it.el.style.setProperty('--iy',v.iy.toFixed(2)+'px');
+}
+function mkTilt(el,o){
+  const z={rot:o.base,rx:0,ry:0,s:1,ix:0,iy:0};
+  const it={el,o,v:Object.assign({},z),T:Object.assign({},z),vel:{rot:0,rx:0,ry:0,s:0,ix:0,iy:0},hov:false};
+  applyTilt(it);return it;
+}
+gsap.ticker.add((time,dtms)=>{
+  if(!tiltSet.size)return;
+  const dt=Math.min(dtms/1000,1/30);
+  tiltSet.forEach(it=>{
+    let moving=false;
+    for(const k of TK){
+      const a=230*(it.T[k]-it.v[k])-15*it.vel[k];
+      it.vel[k]+=a*dt;it.v[k]+=it.vel[k]*dt;
+      if(Math.abs(it.vel[k])>.03||Math.abs(it.T[k]-it.v[k])>.003)moving=true;
+    }
+    if(!moving){for(const k of TK){it.v[k]=it.T[k];it.vel[k]=0;}tiltSet.delete(it);}
+    applyTilt(it);
+  });
+});
+function bindTilt(it,host){
+  const o=it.o,T=it.T;
+  const rest=()=>{T.rot=o.base;T.rx=0;T.ry=0;T.s=1;T.ix=0;T.iy=0;tiltSet.add(it);};
+  host.addEventListener('pointerenter',e=>{
+    if(e.pointerType==='touch')return;
+    it.hov=true;host.classList.add('hv');T.rot=0;T.s=o.hoverS;tiltSet.add(it);
+  });
+  host.addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch'||!it.hov)return;
+    const r=host.getBoundingClientRect();
+    const px=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),py=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+    T.ry=(px-.5)*2*o.max;T.rx=-(py-.5)*2*o.max;T.ix=(.5-px)*o.par;T.iy=(.5-py)*o.par*.7;
+    it.el.style.setProperty('--mx',(px*100).toFixed(1)+'%');it.el.style.setProperty('--my',(py*100).toFixed(1)+'%');
+    it.el.style.setProperty('--hx',(px*100).toFixed(1)+'%');it.el.style.setProperty('--hy',(py*100).toFixed(1)+'%');
+    tiltSet.add(it);
+  });
+  host.addEventListener('pointerleave',()=>{it.hov=false;host.classList.remove('hv');rest();});
+  host.addEventListener('pointerdown',()=>{T.s=.97;tiltSet.add(it);});
+  const up=()=>{T.s=it.hov?o.hoverS:1;tiltSet.add(it);};
+  host.addEventListener('pointerup',up);host.addEventListener('pointercancel',()=>{it.hov=false;host.classList.remove('hv');rest();});
+}
+
+/* play-button magnet */
+function buildMagnet(){
+  if(!FINE||RM)return;
+  const mags=$$('.mag');let raf=0,mx=0,my=0;
+  addEventListener('pointermove',e=>{
+    mx=e.clientX;my=e.clientY;if(raf)return;
+    raf=requestAnimationFrame(()=>{raf=0;mags.forEach(m=>{
+      const r=m.getBoundingClientRect();
+      if(r.bottom<-150||r.top>innerHeight+150){return;}
+      const cx=r.left+r.width/2,cy=r.top+r.height/2,dx=mx-cx,dy=my-cy,d=Math.hypot(dx,dy),R=Math.max(r.width,r.height)*.95;
+      if(d<R){const k=(1-d/R)*.5;m.style.setProperty('--mgx',Math.round(dx*k)+'px');m.style.setProperty('--mgy',Math.round(dy*k)+'px');}
+      else if(m._on){m.style.setProperty('--mgx','0px');m.style.setProperty('--mgy','0px');}
+      m._on=d<R;
+    });});
+  },{passive:true});
+}
+
+/* =========================================================
+   8. Sections: GAMES (big panels) + FAN ART (taped photo prints)
+   ========================================================= */
+// a slanted colour band sweeping across a section heading
+function sweep(sel){
+  const w=$(sel+' .sweep');if(!w||RM)return;
+  const bars=$$('i',w);
+  w.style.display='block';
+  bars.forEach((b,k)=>{
+    gsap.fromTo(b,{x:()=>-b.offsetWidth*1.6},{x:()=>w.offsetWidth+b.offsetWidth*.6,duration:.62,ease:'power3.inOut',delay:k*.09,
+      onComplete:()=>{if(k===bars.length-1)w.style.display='none';}});
+  });
+}
+
+function buildSections(){
+  /* ----- GAMES ----- */
+  const gh=$$('#gamesTitle .ch2>span');
+  panels.forEach(p=>{p._mw=$('.gp-mw',p);p._m=$('.gp-media',p);p._lns=$$('.gp-t .ln>span',p);p._misc=$$('.gp-tag .chip,.gp-d,.mag',p);p._no=$('.gp-no',p);p._img=$('.gp-media .m',p);p._star=$('.gp-star',p);});
+  $('#stkGames').textContent=GAMES.length+' GAMES';
+  $('#stkFan').textContent=FANS.length+' ARTS';
+  if(!RM){
+    gsap.set(gh,{yPercent:120,rotation:8});gsap.set('#stkGames',{scale:0,rotation:-40});
+    gsap.set('.sband.a',{clipPath:'inset(0 100% 0 0)'});
+    ScrollTrigger.create({trigger:'#gamesTitle',start:'top 88%',once:true,onEnter:()=>{
+      sweep('#gamesHead');
+      gsap.to('.sband.a',{clipPath:'inset(0 0% 0 0)',duration:.8,ease:'power4.out'});
+      gsap.to(gh,{yPercent:0,rotation:0,duration:.8,ease:'back.out(2.4)',stagger:.06,delay:.15});
+      gsap.to('#stkGames',{scale:1,rotation:-6,duration:.7,ease:'back.out(3)',delay:.55});
+      gsap.to('#stkGames',{rotation:-2,duration:1.2,ease:'sine.inOut',yoyo:true,repeat:-1,delay:1.4});
+      FX.splash(.3,.22,0,1600,1);FX.splash(.78,.25,2,1600,1);
+    }});
+    panels.forEach((p,i)=>{
+      const rev=i%2===1;
+      p._round=30;
+      revealPrep(p,i);
+      gsap.set(p._lns,{yPercent:115});gsap.set(p._misc,{opacity:0,y:20});gsap.set(p._mw,{scale:.82,opacity:0});gsap.set(p._star,{scale:0});
+      ScrollTrigger.create({trigger:p,start:'top 86%',once:true,onEnter:()=>{
+        p._in=true;
+        revealPlay(p,i);
+        const t=gsap.timeline();
+        t.to(p._mw,{scale:1,opacity:1,duration:.9,ease:'back.out(1.6)'},.3)
+         .to(p._lns,{yPercent:0,duration:.8,ease:'power4.out',stagger:.1},.45)
+         .to(p._misc,{opacity:1,y:0,duration:.5,ease:'back.out(2)',stagger:.06},.7)
+         .to(p._star,{scale:1,rotation:90,duration:.7,ease:'back.out(3)'},.9);
+        FX.splash(rev?.9:.1,.45,i,1800,.9);FX.splash(rev?.12:.88,.6,i+2,1400,.8);
+      }});
+      // parallax inside the frame + drifting outline numeral (scroll-linked, never pins)
+      gsap.fromTo(p._no,{xPercent:rev?-6:6},{xPercent:rev?6:-6,ease:'none',scrollTrigger:{trigger:p,start:'top bottom',end:'bottom top',scrub:true}});
+      gsap.to(p._star,{y:i%2?-10:10,duration:2+i*.2,ease:'sine.inOut',yoyo:true,repeat:-1});
+    });
+  }else panels.forEach(p=>{p._in=true;});
+  panels.forEach(p=>{
+    const it=mkTilt(p._m,{base:p._base,hoverS:1.03,max:9,par:16});
+    if(!RM)bindTilt(it,p._mw);
+    p.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')BG.panelHover(e.clientX,e.clientY);});
+  });
+
+  /* ----- FAN ART ----- */
+  sizeFan();
+  let rto;const relayout=()=>{clearTimeout(rto);rto=setTimeout(()=>{sizeFan();ScrollTrigger.refresh();},120);};
+  addEventListener('resize',relayout);
+  if(MQ_SM.addEventListener)MQ_SM.addEventListener('change',relayout);
+
+  const txt=$('#fhText'),brush=$('#fhBrush');
+  if(!RM){
+    txt.style.strokeDasharray='2600';txt.style.strokeDashoffset='2600';txt.style.fillOpacity='0';
+    const fsh=$('#fhSh');fsh.style.opacity='0';
+    brush.style.strokeDasharray='900';brush.style.strokeDashoffset='900';
+    gsap.set('#stkFan',{scale:0,rotation:40});gsap.set('.sband.b',{clipPath:'inset(0 100% 0 0)'});
+    ScrollTrigger.create({trigger:'#fanTitle',start:'top 88%',once:true,onEnter:()=>{
+      sweep('#fanHead');
+      gsap.to('.sband.b',{clipPath:'inset(0 0% 0 0)',duration:.8,ease:'power4.out'});
+      gsap.to(txt,{strokeDashoffset:0,duration:1.8,ease:'power2.inOut'});
+      gsap.to(txt,{fillOpacity:1,duration:.6,delay:1.4});
+      gsap.to(fsh,{opacity:1,duration:.5,delay:1.6});
+      gsap.to(brush,{strokeDashoffset:0,duration:.9,ease:'power2.out',delay:1.5});
+      gsap.to('#stkFan',{scale:1,rotation:5,duration:.7,ease:'back.out(3)',delay:1.2});
+      [0,3,4,1].forEach((c,k)=>setTimeout(()=>FX.splash(.15+k*.22,.2+(k%2)*.12,c,1500,.7),k*220));
+    }});
+    gsap.to('.pal',{rotation:'+=360',duration:40,ease:'none',repeat:-1});
+    tiles.forEach(t=>t.classList.add('pre'));
+  }
+  tiles.forEach(t=>{
+    t._pr=$('.pr',t);
+    const it=mkTilt(t._pr,{base:t._base,hoverS:1.07,max:11,par:12});
+    if(!RM)bindTilt(it,t);
+    t.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')BG.tileHover(t);});
+  });
+  // prints fall onto the wall and stick, then the tape snaps on
+  const paint=els=>{
+    els.forEach((c,k)=>{
+      c._rev=true;
+      if(RM)return;
+      c.style.setProperty('--d',(k*.08).toFixed(2)+'s');
+      c.classList.remove('pre');c.classList.add('in');
+    });
+  };
+  ScrollTrigger.batch(tiles,{start:'top 93%',once:true,onEnter:b=>paint(b.filter(c=>!c._rev))});
+  if(RM)paint(tiles);
+
+  // videos play only when visible
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting)v.play().catch(()=>{});else v.pause();}),{threshold:.25});
+  $$('video',gamesList).forEach(v=>io.observe(v));
+  $$('video',fgrid).forEach(v=>io.observe(v));
+
+}
+
+/* =========================================================
+   9. Cursor
+   ========================================================= */
+function buildCursor(){
+  if(!FINE)return;
+  const cur=$('.cursor'),lab=$('.cursor-c span');
+  document.body.classList.add('has-cursor');
+  const xT=gsap.quickTo(cur,'x',{duration:.3,ease:'power3'}),yT=gsap.quickTo(cur,'y',{duration:.3,ease:'power3'});
+  addEventListener('pointermove',e=>{ if(e.pointerType==='touch')return; xT(e.clientX);yT(e.clientY);document.body.classList.add('moved');},{passive:true});
+  document.addEventListener('pointerover',e=>{
+    const t=e.target.closest&&e.target.closest('[data-cursor]');
+    if(t&&t.dataset.cursor!==''){lab.textContent=t.dataset.cursor;cur.classList.add('big');}
+  });
+  document.addEventListener('pointerout',e=>{
+    const to=e.relatedTarget&&e.relatedTarget.closest?e.relatedTarget.closest('[data-cursor]'):null;
+    if(!to||to.dataset.cursor==='')cur.classList.remove('big');
+  });
+  addEventListener('pointerdown',()=>cur.classList.add('down'));
+  addEventListener('pointerup',()=>cur.classList.remove('down'));
+  document.addEventListener('mouseleave',()=>document.body.classList.remove('moved'));
+}
+
+/* =========================================================
+   10. Profile
+   ========================================================= */
+function buildMe(){
+  if(RM)return;
+  const tl=gsap.timeline({paused:true});ScrollTrigger.create({trigger:'.me-box',start:'top 85%',once:true,onEnter:()=>tl.play()});
+  tl.from('#iconRing',{scale:0,duration:.9,ease:'back.out(2)'})
+    .from('#meName',{yPercent:60,opacity:0,duration:.6,ease:'power4.out'},.25)
+    .from('#meBio',{opacity:0,y:16,duration:.6},.4)
+    .from('#meX',{scale:0,duration:.5,ease:'back.out(3)',clearProps:'transform,translate,rotate,scale'},.55)
+}
+
+/* =========================================================
+   7b. Back to top: paper plane sticker, super-jump flight on click
+   ========================================================= */
+function buildToTop(){
+  const btn=$('#toTop'),me=$('#me');if(!btn||!me)return;
+  const ico=$('.tt-ico',btn);
+  const PLANE=ico.innerHTML;
+  let shown=false,flying=false,hov=false;
+  gsap.set(btn,{scale:0,autoAlpha:0});
+  const idle=RM?null:gsap.timeline({repeat:-1,repeatDelay:2.6,paused:true})
+    .to(ico,{y:-7,rotation:8,duration:.22,ease:'power2.out'})
+    .to(ico,{y:0,rotation:0,duration:.6,ease:'bounce.out'});
+  function setShown(v){
+    if(v===shown)return;shown=v;if(flying)return;
+    if(RM){gsap.set(btn,{scale:v?1:0,autoAlpha:v?1:0});return;}
+    gsap.killTweensOf(btn);
+    if(v){gsap.to(btn,{scale:1,autoAlpha:1,duration:.6,ease:'back.out(2.6)'});idle.restart();}
+    else{gsap.to(btn,{scale:0,autoAlpha:0,duration:.25,ease:'power2.in'});idle.pause(0);}
+  }
+  function check(){
+    if(flying)return;
+    const max=document.documentElement.scrollHeight-innerHeight,prog=max>0?(window.scrollY||0)/max:0;
+    setShown(me.getBoundingClientRect().top<innerHeight*.55||prog>.92);
+  }
+  let tacc=0;gsap.ticker.add((t,dtms)=>{tacc+=dtms;if(tacc<100)return;tacc=0;check();});
+  // hover: nose up and tremble before launch
+  let shake=null;
+  if(!RM){
+    btn.addEventListener('pointerenter',e=>{
+      if(e.pointerType==='touch'||flying)return;hov=true;idle.pause(0);
+      gsap.to(ico,{rotation:-14,y:-2,duration:.2,ease:'power2.out',overwrite:true});
+      shake=gsap.to(ico,{x:1.6,duration:.05,repeat:-1,yoyo:true,ease:'none',delay:.2});
+    });
+    btn.addEventListener('pointerleave',()=>{
+      if(!hov)return;hov=false;if(shake)shake.kill();
+      if(!flying){gsap.to(ico,{rotation:0,x:0,y:0,duration:.35,ease:'back.out(2)',overwrite:true});if(shown)idle.restart();}
+    });
+  }
+  // cubic bezier position + tangent angle
+  const bez=(P,t)=>{const u=1-t;
+    const x=u*u*u*P[0][0]+3*u*u*t*P[1][0]+3*u*t*t*P[2][0]+t*t*t*P[3][0];
+    const y=u*u*u*P[0][1]+3*u*u*t*P[1][1]+3*u*t*t*P[2][1]+t*t*t*P[3][1];
+    const dx=3*u*u*(P[1][0]-P[0][0])+6*u*t*(P[2][0]-P[1][0])+3*t*t*(P[3][0]-P[2][0]);
+    const dy=3*u*u*(P[1][1]-P[0][1])+6*u*t*(P[2][1]-P[1][1])+3*t*t*(P[3][1]-P[2][1]);
+    return {x,y,rot:Math.atan2(dy,dx)*57.2958+45};};   // plane artwork points up-right (-45deg)
+  const mkFly=()=>{const f=document.createElement('div');f.className='tt-fly';f.innerHTML=PLANE;document.body.appendChild(f);return f;};
+  function bit(x,y,k){
+    const b=document.createElement('div');b.className='tt-bit';const sz=10+Math.random()*9;
+    b.style.width=sz+'px';b.style.height=(k===2?4:sz)+'px';b.style.background=ACC_HEX[Math.floor(Math.random()*6)];
+    if(k===0)b.style.borderRadius='50%';
+    else if(k===1){b.style.border='0';b.style.clipPath='polygon(50% 0,100% 100%,0 100%)';}
+    else b.style.borderRadius='4px';
+    document.body.appendChild(b);
+    gsap.fromTo(b,{x:x-sz/2,y:y-sz/2,scale:.2,rotation:Math.random()*90,opacity:1},
+      {x:x-sz/2+(Math.random()-.5)*50,y:y-sz/2+10+Math.random()*30,scale:1,rotation:'+=120',duration:.35,ease:'back.out(2.5)'});
+    gsap.to(b,{opacity:0,duration:.5,delay:.5+Math.random()*.25,ease:'power1.in',onComplete:()=>b.remove()});
+  }
+  function arrival(){
+    const f=mkFly(),W_=innerWidth,H_=innerHeight,P=[[-90,H_*.82],[W_*.25,H_*.5],[W_*.5,H_*.02],[W_+110,H_*.1]];
+    gsap.set(f,{opacity:1});
+    const o={t:0};
+    gsap.to(o,{t:1,duration:.7,ease:'sine.inOut',onUpdate:()=>{const q=bez(P,o.t);gsap.set(f,{x:q.x,y:q.y,rotation:q.rot,scale:.9});},onComplete:()=>f.remove()});
+  }
+  function launch(){
+    if(flying)return;
+    if(RM){if(lenis)lenis.scrollTo(0,{immediate:true});else window.scrollTo(0,0);return;}
+    flying=true;hov=false;if(shake)shake.kill();idle.pause(0);
+    const r=btn.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,H_=innerHeight,W_=innerWidth;
+    const fly=mkFly();gsap.set(fly,{x:cx,y:cy,rotation:0,scale:r.width<60?.85:1});
+    gsap.set(ico,{opacity:0,x:0,y:0,rotation:0});
+    if(Cut)Cut.burst(cx,cy,6);
+    // page goes up at the same time
+    gsap.delayedCall(.12,()=>{if(lenis)lenis.scrollTo(0,{duration:1.1});else window.scrollTo({top:0,behavior:'smooth'});});
+    // button squashes, then pops out of existence
+    gsap.timeline()
+      .to(btn,{scaleX:1.22,scaleY:.72,duration:.14,ease:'power2.out'})
+      .to(btn,{scale:0,autoAlpha:0,duration:.22,ease:'back.in(2)'});
+    // plane: pull back, then arc up and out of the screen
+    const P=[[cx-12,cy+10],[cx+34,cy-H_*.28],[cx-W_*.1,cy-H_*.65],[cx-W_*.04,-150]];
+    const o={t:0};let nb=0;
+    const tl=gsap.timeline({onComplete:()=>{
+      fly.remove();gsap.set(ico,{opacity:1});flying=false;
+      gsap.set(btn,{scale:0,autoAlpha:0});shown=false;
+      gsap.delayedCall(.1,arrival);
+    }});
+    tl.to(fly,{x:cx-14,y:cy+12,rotation:-8,scale:.85,duration:.15,ease:'power2.out'})
+      .to(o,{t:1,duration:.85,ease:'power2.in',onUpdate:()=>{
+        const q=bez(P,o.t);gsap.set(fly,{x:q.x,y:q.y,rotation:q.rot,scale:.9+o.t*.9});
+        if(nb<8&&o.t>.06+nb*.1){nb++;bit(q.x,q.y,nb%3);}
+      }});
+  }
+  btn.addEventListener('click',launch);
+}
+
+/* ---------- ゲームタイトルの自動フィット ----------
+   1) 1行に収まるまで文字を縮める（下限 62%）  2) それでも収まらなければ、文節で折り返して2行に */
+function fitTitles(){
+  $$('.gp-t').forEach(h=>{
+    const info=h.parentElement;if(!info)return;
+    h.classList.remove('wrap');h.style.setProperty('--ts','1');
+    const avail=info.clientWidth-8;let w=0;
+    $$('.ln>span',h).forEach(s=>{if(s.offsetParent!==null)w=Math.max(w,s.offsetWidth);});
+    if(!w||avail<=0)return;
+    let k=Math.min(1,avail/w);
+    if(k<.62){h.classList.add('wrap');k=Math.max(.62,Math.min(1,avail/(w/2*1.18)));}
+    h.style.setProperty('--ts',k.toFixed(3));
+  });
+}
+window.fitTitles=fitTitles;
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitTitles);
+{let ft;addEventListener('resize',()=>{clearTimeout(ft);ft=setTimeout(fitTitles,120);});}
+
+/* ---------- go ---------- */
+function start(){
+  fitTitles();
+  buildCursor();
+  buildMini();
+  buildSections();
+  buildMagnet();
+  buildMe();
+  buildToTop();
+  runIntro();
+  addEventListener('load',()=>ScrollTrigger.refresh());
+}
+(document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1800))]):Promise.resolve()).then(start);
+})();
+</script>
+<script>/* FAN ART 見出し（SVG）の幅を、読み込まれたフォントの実寸に合わせる */
+(function(){var svg=document.getElementById('fanTitle'),t=document.getElementById('fhText'),br=document.getElementById('fhBrush');if(!svg||!t)return;
+function fit(){var L=t.getComputedTextLength();if(!L)return;var W=Math.ceil(L+32);svg.setAttribute('viewBox','0 0 '+W+' 176');if(br)br.setAttribute('transform','scale('+(W/820).toFixed(3)+' 1)');svg.style.width='min(100%,calc(clamp(46px,10.5vw,150px)*'+(W/140).toFixed(2)+'))';}
+fit();if(document.fonts){if(document.fonts.ready)document.fonts.ready.then(fit);if(document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',fit);}})();
+</script>
+<script>/* 言語切替（地球マークのボタン）。表示は html[lang] だけで切り替わる */
+(function(){var b=document.getElementById('langSw');if(!b)return;
+b.addEventListener('click',function(){var l=document.documentElement.lang==='en'?'ja':'en';document.documentElement.lang=l;try{localStorage.setItem('lang',l);}catch(e){}
+if(window.fitTitles)fitTitles();
+if(window.fitScrTitle)fitScrTitle();
+if(window.ScrollTrigger)setTimeout(function(){ScrollTrigger.refresh();},60);});})();
+</script>
 </body>
 </html>
