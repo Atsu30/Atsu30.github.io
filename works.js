@@ -415,8 +415,7 @@ window.JOBS = [
  {
   "title": "ステップシアター - STEP THEATER",
   "title_lines": [
-   "ステップシアター",
-   "STEP THEATER"
+   "ステップシアター - STEP THEATER"
   ],
   "title_en": "STEP THEATER",
   "roles": [
