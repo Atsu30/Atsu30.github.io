@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#ff9bc1"/>
-  <text x="32" y="46" text-anchor="middle" font-family="'Quicksand','M PLUS Rounded 1c',sans-serif" font-weight="700" font-size="38" fill="white">M</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#ffe03a" stroke="#221b4e" stroke-width="5"/><g transform="translate(9 10) scale(1.15)"><path d="M36 4 L16 22 L19 35 Z" fill="#dfe6ff" stroke="#221b4e" stroke-width="3.4" stroke-linejoin="round"/><path d="M36 4 L4 17 L16 22 Z" fill="#fff" stroke="#221b4e" stroke-width="3.4" stroke-linejoin="round"/></g></svg>
