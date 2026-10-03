@@ -410,4 +410,49 @@ window.WORKS = [
   "h": 720
  }
 ];
+// お仕事として参加した作品（WORK セクション）。roles は担当、links は外部リンク（steam:true で Steam のロゴ付き）。
+window.JOBS = [
+ {
+  "title": "STEP THEATER - ステップシアター",
+  "title_lines": [
+   "STEP THEATER",
+   "ステップシアター"
+  ],
+  "title_en": "STEP THEATER",
+  "roles": [
+   "企画",
+   "プログラマー"
+  ],
+  "roles_en": [
+   "Game Design",
+   "Programmer"
+  ],
+  "studio": "Pixel Smile",
+  "publisher": "エヌビーゲームズ",
+  "publisher_en": "NB Games",
+  "platforms": [
+   "Nintendo Switch 2",
+   "Nintendo Switch",
+   "Steam"
+  ],
+  "release": "2026.12.03",
+  "desc": "リズムに合わせてステップを踏み、物語を進めて上映の成功を目指す、心弾むリズムゲーム。",
+  "desc_en": "A heart-pounding rhythm game where you step to the beat, move the story forward, and make the screening a hit.",
+  "thumb": "assets/step_theater.jpg",
+  "video": "assets/step_theater.mp4",
+  "w": 1280,
+  "h": 720,
+  "links": [
+   {
+    "label": "OFFICIAL SITE",
+    "url": "https://nbgames.jp/step-theater/"
+   },
+   {
+    "label": "WISHLIST ON STEAM",
+    "url": "https://store.steampowered.com/app/4264410/STEP_THEATER/",
+    "steam": true
+   }
+  ]
+ }
+];
 window.PROFILE = {name:'もりあーてぃ', handle:'@MoriArty_30', x:'https://x.com/MoriArty_30', icon:'assets/profile_icon.jpg', bio:'個人ゲームの開発をしたり、VTuberのファンゲーム作りや3Dのファンアートなどを作って推し活をしています。本業はプログラマー。', bio_en:'I make indie games, fan games for VTubers, and 3D fan art of the ones I root for. Programmer by day.'};
