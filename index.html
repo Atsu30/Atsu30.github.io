@@ -268,12 +268,9 @@ main{position:relative;z-index:5}
 .wk-t{font-family:var(--disp);font-weight:400;font-size:clamp(30px,4vw,60px);line-height:1.08;color:var(--navy)}
 .wk-t .ln{display:block}
 .wk-t .ln:nth-child(2){font-size:.52em;margin-top:.25em;color:var(--violet);text-shadow:2px 2px 0 var(--navy)}
-.wk-co{font-size:clamp(12px,1.05vw,14px);font-weight:800;line-height:1.6;color:var(--navy);opacity:.85}
 .wk-role{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 .wk-role b{font-family:var(--lat);font-size:12px;letter-spacing:.14em}
 .wk-role i{font-style:normal;font-family:var(--disp);font-size:clamp(16px,1.7vw,22px);line-height:1;padding:.42em .75em .48em;background:var(--lemon);border:3px solid var(--navy);border-radius:10px;box-shadow:4px 4px 0 var(--navy)}
-.wk-role i:nth-of-type(odd){transform:rotate(-3deg)}
-.wk-role i:nth-of-type(even){transform:rotate(2.5deg)}
 .wk-d{background:var(--cream);border:3px solid var(--navy);border-radius:14px;padding:.7em 1em;font-size:clamp(13px,1.2vw,16px);line-height:1.7}
 .wk-links{display:flex;flex-wrap:wrap;gap:12px 14px}
 .wk-links .play{font-size:clamp(15px,1.5vw,22px)}
@@ -585,15 +582,13 @@ const jobs=JOBS.map((w,i)=>{
   const media=w.video?`<video class="m" muted loop playsinline preload="none" poster="${esc(w.thumb)}" src="${esc(w.video)}"></video>`:`<img class="m" src="${esc(w.thumb)}" alt="" loading="lazy" decoding="async">`;
   const lines=w.title_lines||[w.title];
   const roles=(w.roles||[]).map((r,k)=>`<i>${L2(esc(r),esc((w.roles_en||[])[k]||r))}</i>`).join('');
-  const co=[w.studio&&`<span>Developer: ${esc(w.studio)}</span>`,w.publisher&&`<span>Publisher: ${L2(esc(w.publisher),esc(w.publisher_en||w.publisher))}</span>`].filter(Boolean).join(' ／ ');
-  const links=(w.links||[]).map(l=>`<span class="mag"><a class="play" href="${esc(l.url)}" target="_blank" rel="noopener">${l.steam?STEAM_ICO:''}${esc(l.label)} <span>↗</span></a></span>`).join('');
+  const links=(w.links||[]).map(l=>`<span class="wk-btn"><a class="play" href="${esc(l.url)}" target="_blank" rel="noopener">${l.steam?STEAM_ICO:''}${esc(l.label)} <span>↗</span></a></span>`).join('');
   a.innerHTML=`<div class="wk-film" aria-hidden="true"></div>
   <div class="wk-body">
     <a class="wk-media" style="--ar:${w.w||16}/${w.h||9}" href="${esc((w.links&&w.links[0]&&w.links[0].url)||'#')}" target="_blank" rel="noopener" data-cursor="VIEW" aria-label="${esc(w.title)}">${media}</a>
     <div class="wk-info">
-      <div class="wk-tag"><span class="chip k">WORK ${nn}</span>${w.release?`<span class="chip">${L2('発売 '+esc(w.release),'Release '+esc(w.release))}</span>`:''}${(w.platforms||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
+      <div class="wk-tag"><span class="chip k">WORK ${nn}</span>${(w.platforms||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
       <h3 class="wk-t"><span class="l-ja">${lines.map(l=>`<span class="ln">${esc(l)}</span>`).join('')}</span><span class="l-en" lang="en"><span class="ln">${esc(w.title_en||w.title)}</span></span></h3>
-      <p class="wk-co">${co}</p>
       <div class="wk-role"><b>${L2('担当','ROLE')}</b>${roles}</div>
       <p class="wk-d">${L2(esc(w.desc||''),esc(w.desc_en||w.desc||''))}</p>
       <div class="wk-links">${links}</div>
@@ -1593,7 +1588,7 @@ function buildSections(){
       gsap.to('#stkWork',{scale:1,rotation:-4,duration:.7,ease:'back.out(3)',delay:.5});
     }});
     jobs.forEach(a=>{
-      const media=$('.wk-media',a),parts=$$('.wk-tag,.wk-t,.wk-co,.wk-d,.wk-links',a),roles=$$('.wk-role i',a),films=$$('.wk-film',a);
+      const media=$('.wk-media',a),parts=$$('.wk-tag,.wk-t,.wk-d,.wk-links',a),roles=$$('.wk-role i',a),films=$$('.wk-film',a);
       gsap.set(a,{opacity:0,y:60,rotation:-1.5});gsap.set(media,{scale:.85,opacity:0});gsap.set(parts,{opacity:0,y:18});gsap.set(roles,{scale:0});gsap.set(films,{backgroundPositionX:'-120px'});
       ScrollTrigger.create({trigger:a,start:'top 85%',once:true,onEnter:()=>{
         gsap.to(a,{opacity:1,y:0,rotation:0,duration:.8,ease:'back.out(1.6)'});
