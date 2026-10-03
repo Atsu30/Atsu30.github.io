@@ -413,10 +413,10 @@ window.WORKS = [
 // お仕事として参加した作品（WORK セクション）。roles は担当、links は外部リンク（steam:true で Steam のロゴ付き）。
 window.JOBS = [
  {
-  "title": "STEP THEATER - ステップシアター",
+  "title": "ステップシアター - STEP THEATER",
   "title_lines": [
-   "STEP THEATER",
-   "ステップシアター"
+   "ステップシアター",
+   "STEP THEATER"
   ],
   "title_en": "STEP THEATER",
   "roles": [
