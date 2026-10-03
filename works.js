@@ -436,8 +436,8 @@ window.JOBS = [
    "Steam"
   ],
   "release": "2026.12.03",
-  "desc": "制作の協力をさせて頂きました。リズムとともに物語を進めて上映の成功を目指す、心弾むリズムゲームです。",
-  "desc_en": "I had the pleasure of helping with development. A heart-pounding rhythm game where you move the story forward to the beat and make the screening a hit.",
+  "desc": "企画・プログラマーとして参加しました。リズムとともに物語を進めて上映の成功を目指す、心弾むリズムゲームです。",
+  "desc_en": "I took part as a game designer and programmer. A heart-pounding rhythm game where you move the story forward to the beat and make the screening a hit.",
   "thumb": "assets/step_theater.jpg",
   "video": "assets/step_theater.mp4",
   "w": 1280,
